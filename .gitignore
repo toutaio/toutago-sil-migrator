@@ -1,0 +1,53 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+bin/
+dist/
+build/
+
+# Migration lock files (temporary)
+*.lock
+
+# Local configuration
+sil.local.yaml
+sil.local.json
+.env.local
+
+# Test databases
+*.db
+*.sqlite
+*.sqlite3
+test_*.sql
+
+# Logs
+*.log
+logs/
