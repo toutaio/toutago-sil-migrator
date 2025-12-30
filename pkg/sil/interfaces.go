@@ -81,6 +81,18 @@ type Migrator interface {
 
 	// Refresh rolls back all migrations and re-runs them
 	Refresh(ctx context.Context) error
+
+	// SetBeforeMigrate sets the callback to run before each migration
+	SetBeforeMigrate(callback MigrationCallback)
+
+	// SetAfterMigrate sets the callback to run after each migration
+	SetAfterMigrate(callback MigrationCallback)
+
+	// SetOnError sets the callback to run when a migration fails
+	SetOnError(callback MigrationErrorCallback)
+
+	// SetLogger sets a custom logger
+	SetLogger(logger Logger)
 }
 
 // Transaction represents a database transaction.
