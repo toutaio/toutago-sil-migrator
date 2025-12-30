@@ -8,7 +8,7 @@ import (
 
 	"github.com/toutaio/toutago-sil-migrator/pkg/sil"
 	"github.com/toutaio/toutago-sil-migrator/pkg/sil/adapters"
-	
+
 	// Import migrations to register them
 	_ "github.com/toutaio/toutago-sil-migrator/examples/basic/migrations"
 )

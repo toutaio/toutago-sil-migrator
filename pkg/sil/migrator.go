@@ -446,7 +446,7 @@ func (m *migrator) runMigration(ctx context.Context, migration Migration, direct
 
 	if migrationErr != nil {
 		m.logger.Error("Migration failed after %v: %v", elapsed, migrationErr)
-		
+
 		// Call error callback
 		if m.onError != nil {
 			m.onError(migration, migrationErr)

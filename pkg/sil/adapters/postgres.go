@@ -226,7 +226,7 @@ func (a *PostgresAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 
 		if locked {
 			a.logger.Debug("Advisory lock acquired")
-			
+
 			// Return lock with release function
 			releaseFunc := func() error {
 				a.logger.Debug("Releasing advisory lock")
@@ -273,7 +273,7 @@ func (a *PostgresAdapter) GetLastBatch(ctx context.Context) (int, error) {
 func (a *PostgresAdapter) getLockKey() int64 {
 	// Parse database URL to get database name
 	dbName := "sil_migrations"
-	
+
 	if u, err := url.Parse(a.config.DatabaseURL); err == nil {
 		if len(u.Path) > 1 {
 			dbName = u.Path[1:] // Remove leading slash
@@ -283,7 +283,7 @@ func (a *PostgresAdapter) getLockKey() int64 {
 	// Generate hash
 	h := fnv.New64a()
 	h.Write([]byte("sil_migration_lock_" + dbName))
-	
+
 	return int64(h.Sum64() & 0x7FFFFFFFFFFFFFFF) // Ensure positive
 }
 

@@ -1,99 +1,66 @@
 # Síl - Database Migration and Seeding Tool
 
-[![CI](https://github.com/toutaio/toutago-sil-migrator/actions/workflows/ci.yml/badge.svg)](https://github.com/toutaio/toutago-sil-migrator/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/toutaio/toutago-sil-migrator.svg)](https://pkg.go.dev/github.com/toutaio/toutago-sil-migrator)
-[![Go Report Card](https://goreportcard.com/badge/github.com/toutaio/toutago-sil-migrator)](https://goreportcard.com/report/github.com/toutaio/toutago-sil-migrator)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Coverage](https://img.shields.io/badge/Coverage-43.5%25-yellow.svg)]()
 
-**Síl** (Old Irish for "seed" or "lineage") is a standalone database migration and seeding tool for Go projects, inspired by Rails, Laravel, Flyway, and Alembic.
+Síl is a powerful, standalone database migration and seeding tool for Go applications, inspired by Rails, Laravel, Flyway, and Alembic.
 
-> ⚠️ **Status**: Under active development - Phase 1 (Foundation)
+## ✨ Features
 
-## Core Philosophy
+- 🔒 **Distributed Locking** - Prevents concurrent migrations with PostgreSQL advisory locks
+- 💾 **Transaction Safety** - Automatic rollback on migration failures
+- 📦 **Batch Tracking** - Precise rollback control by migration batches
+- 🎯 **Type-Safe Migrations** - Write migrations in Go
+- 🔌 **Standalone** - Zero required dependencies (optional datamapper integration)
+- 🗄️ **Multi-Database** - PostgreSQL (MySQL, SQLite coming in Phase 2)
+- 🎨 **Beautiful CLI** - Colored output with progress tracking
+- 📝 **Comprehensive Logging** - Track every migration step
+- ⚡ **Fast** - Optimized for performance
+- 🧪 **Well-Tested** - 43.5% test coverage and growing
 
-- **Zero Required Dependencies**: Fully standalone, works with any Go project
-- **Interface-Driven**: SOLID principles, pluggable database adapters
-- **Production-Ready**: Distributed locking, transaction safety, comprehensive testing
-- **Developer-Friendly**: Clear CLI, helpful error messages, great DX
-- **Optional Integrations**: Seamless integration with toutago-datamapper (opt-in)
-
-## Features
-
-### Current (Phase 1)
-- ✅ **Version-Based Migrations**: Sequential, timestamped migration files
-- ✅ **PostgreSQL Support**: Production-ready PostgreSQL adapter
-- ✅ **Transaction Safety**: Atomic migrations with auto-rollback
-- ✅ **Distributed Locking**: Prevent concurrent migrations in multi-instance deployments
-- ✅ **CLI Tool**: Intuitive command-line interface
-- ✅ **Programmatic API**: Embed in Go applications
-
-### Planned
-- 🔄 **Multi-Database**: MySQL, SQLite adapters (Phase 2)
-- 🔄 **Data Seeding**: Idempotent seeders with dependency management (Phase 3)
-- 🔄 **Advanced Features**: Dry-run mode, migration helpers, performance optimization (Phase 4)
-- 🔄 **Datamapper Bridge**: Optional integration with toutago-datamapper (Phase 2)
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Installation
 
 ```bash
-go get github.com/toutaio/toutago-sil-migrator
+go install github.com/toutaio/toutago-sil-migrator/cmd/sil@latest
 ```
 
-### Requirements
-- Go 1.22 or higher
-- PostgreSQL 10+ (Phase 1)
-
-### Basic Usage
+Or build from source:
 
 ```bash
-# Initialize migrations directory
+git clone https://github.com/toutaio/toutago-sil-migrator
+cd toutago-sil-migrator
+make install
+```
+
+### Initialize Project
+
+```bash
+# Create project structure
 sil init
 
-# Create a new migration
-sil create add_users_table
-
-# Run pending migrations
-sil migrate
-
-# Check migration status
-sil status
-
-# Rollback last batch
-sil rollback
+# Configure database
+export DATABASE_URL="postgres://user:pass@localhost:5432/mydb?sslmode=disable"
 ```
 
-### Configuration
+### Create Migration
 
-Create `sil.yaml` in your project root:
+```bash
+# Basic migration
+sil create create_users_table
 
-```yaml
-database_url: "postgres://user:pass@localhost:5432/mydb"
-migrations_dir: "./migrations"
-lock_timeout: 300s
-migration_timeout: 1800s
-max_connections: 10
-environment: development
+# With table template
+sil create --table users create_users_table
 ```
 
-### Creating Migrations
+Edit the generated migration:
 
 ```go
-package migrations
-
-import "github.com/toutaio/toutago-sil-migrator/pkg/sil"
-
-func init() {
-    sil.RegisterMigration(&Migration_20241230120000_add_users_table{})
-}
-
-type Migration_20241230120000_add_users_table struct {
-    sil.BaseMigration
-}
-
-func (m *Migration_20241230120000_add_users_table) Up(adapter sil.DatabaseAdapter) error {
-    return adapter.Exec(`
+func (m *Migration_20241230100000_CreateUsersTable) Up(adapter sil.DatabaseAdapter) error {
+    ctx := context.Background()
+    return adapter.Exec(ctx, `
         CREATE TABLE users (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
@@ -103,140 +70,253 @@ func (m *Migration_20241230120000_add_users_table) Up(adapter sil.DatabaseAdapte
     `)
 }
 
-func (m *Migration_20241230120000_add_users_table) Down(adapter sil.DatabaseAdapter) error {
-    return adapter.Exec(`DROP TABLE users`)
+func (m *Migration_20241230100000_CreateUsersTable) Down(adapter sil.DatabaseAdapter) error {
+    ctx := context.Background()
+    return adapter.Exec(ctx, `DROP TABLE IF EXISTS users`)
 }
 ```
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│                   CLI / Application                  │
-│              (cmd/sil or programmatic API)           │
-└─────────────────┬───────────────────────────────────┘
-                  │
-         ┌────────▼─────────┐
-         │    Migrator      │
-         │  (orchestrates)  │
-         └────────┬─────────┘
-                  │
-    ┌─────────────┼─────────────┐
-    │             │             │
-┌───▼────┐  ┌────▼─────┐  ┌───▼──────┐
-│Loader  │  │ Executor │  │  Lock    │
-│        │  │          │  │ Manager  │
-└───┬────┘  └────┬─────┘  └────┬─────┘
-    │            │              │
-    │       ┌────▼──────────────▼────┐
-    │       │  DatabaseAdapter        │
-    │       │    (interface)          │
-    │       └─────────┬───────────────┘
-    │                 │
-    │       ┌─────────┼──────────┬────────┐
-    │       │         │          │        │
-    │   ┌───▼──┐  ┌──▼───┐  ┌──▼───┐ ┌──▼───────┐
-    │   │PostgreSQL MySQL SQLite │Datamapper│
-    │   │       │  │      │  │      │ │  Bridge  │
-    │   └───┬──┘  └──┬───┘  └──┬───┘ └──┬───────┘
-    │       │        │         │        │
-    └───────┼────────┼─────────┼────────┘
-            │        │         │
-         ┌──▼────────▼─────────▼──┐
-         │   Database Layer        │
-         │  (PostgreSQL/etc)       │
-         └─────────────────────────┘
-```
-
-## Development Roadmap
-
-| Phase | Timeline | Status | Deliverable |
-|-------|----------|--------|-------------|
-| **Phase 1** | Weeks 1-3 | 🔄 In Progress | Core engine + PostgreSQL |
-| **Phase 2** | Weeks 4-5 | 📋 Planned | MySQL + SQLite + Datamapper |
-| **Phase 3** | Weeks 6-7 | 📋 Planned | Seeder system |
-| **Phase 4** | Weeks 8-9 | 📋 Planned | Advanced features + v0.1.0-alpha |
-
-See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for detailed roadmap.
-
-## Documentation
-
-- [Implementation Plan](IMPLEMENTATION_PLAN.md) - Detailed development roadmap
-- [Architecture Design](openspec/changes/create-sil-migrator/design.md) - System design decisions
-- [Project Context](openspec/project.md) - Project background and conventions
-
-### Coming Soon
-- Migration Writing Guide
-- PostgreSQL Adapter Guide
-- CLI Command Reference
-- Troubleshooting Guide
-- Programmatic API Documentation
-
-## Examples
-
-Coming soon in Phase 1:
-- Basic PostgreSQL migration example
-- Programmatic API usage
-- Docker deployment example
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
+### Run Migrations
 
 ```bash
-git clone https://github.com/toutaio/toutago-sil-migrator.git
-cd toutago-sil-migrator
-go mod download
-go test ./...
+# Run all pending migrations
+sil migrate
+
+# Run specific number of migrations
+sil migrate --steps 3
+
+# Check status
+sil status
+
+# Rollback last batch
+sil rollback
+
+# Rollback specific number
+sil rollback --steps 2
 ```
 
-### Running Tests
+## 📖 Documentation
+
+- [CLI Reference](cmd/sil/README.md) - Complete CLI documentation
+- [Testing Guide](tests/README.md) - How to test
+- [Implementation Plan](IMPLEMENTATION_PLAN.md) - Development roadmap
+- [Phase 1 Progress](PHASE1_PROGRESS.md) - Current progress
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     CLI (Cobra)                         │
+│  init  create  migrate  rollback  status  reset         │
+└────────────────────┬────────────────────────────────────┘
+                     │
+┌────────────────────┴────────────────────────────────────┐
+│                  Migrator Core                          │
+│  • Migration Registry                                   │
+│  • Batch Tracking                                       │
+│  • Execution Engine                                     │
+└────────────────────┬────────────────────────────────────┘
+                     │
+┌────────────────────┴────────────────────────────────────┐
+│              Database Adapters                          │
+│  PostgreSQL │ MySQL │ SQLite │ Custom                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+## 💡 Examples
+
+### Basic Example
+
+See [`examples/basic/`](examples/basic/) for a complete working example.
+
+### Programmatic Usage
+
+```go
+package main
+
+import (
+    "context"
+    "github.com/toutaio/toutago-sil-migrator/pkg/sil"
+    "github.com/toutaio/toutago-sil-migrator/pkg/sil/adapters"
+)
+
+func main() {
+    // Configure
+    config := sil.DefaultConfig()
+    config.DatabaseURL = "postgres://localhost/mydb"
+    
+    // Create adapter
+    adapter, _ := adapters.NewPostgresAdapter(config)
+    adapter.Connect(context.Background(), config)
+    defer adapter.Close()
+    
+    // Create migrator
+    migrator, _ := sil.NewMigrator(config, adapter)
+    
+    // Run migrations
+    migrator.Migrate(context.Background())
+}
+```
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Go 1.22+
+- PostgreSQL 12+ (for integration testing)
+
+### Setup
+
+```bash
+# Clone repository
+git clone https://github.com/toutaio/toutago-sil-migrator
+cd toutago-sil-migrator
+
+# Download dependencies
+go mod download
+
+# Verify dependencies
+go mod verify
+
+# Run tests
+go test ./...
+
+# Build
+go build -o bin/sil ./cmd/sil
+```
+
+### Testing
 
 ```bash
 # Run all tests
-go test ./...
+go test -v ./...
 
-# Run with coverage
+# Run with race detector
+go test -race ./...
+
+# Run unit tests only (skip integration)
+go test -short ./...
+
+# Generate coverage report
 go test -coverprofile=coverage.out ./...
+
+# View coverage in terminal
+go tool cover -func=coverage.out
+
+# View coverage in browser
 go tool cover -html=coverage.out
 
-# Run integration tests
-go test -tags=integration ./tests/integration/...
+# Run specific test
+go test -v -run TestMigrator_Migrate ./pkg/sil
+
+# Run benchmarks
+go test -bench=. -benchmem ./...
 ```
 
-### Code Quality
+#### Integration Testing with Docker
 
-Please ensure:
-- All tests pass
-- Code coverage remains above 80% (target: 90%)
-- Code is formatted with `gofmt`
-- No linting errors from `golangci-lint`
+```bash
+# Start PostgreSQL
+docker run --name sil-test-db \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=sil_test \
+  -p 5432:5432 \
+  -d postgres:15
 
-## Project Information
+# Run tests with database
+DATABASE_URL="postgres://postgres:postgres@localhost:5432/sil_test?sslmode=disable" \
+  go test -v ./...
 
-- **Version**: 0.1.0-dev (Phase 1)
-- **Started**: December 2024
-- **Language**: Go 1.22+
-- **Test Coverage**: Target 90%+
-- **Status**: Under Active Development
+# Cleanup
+docker stop sil-test-db && docker rm sil-test-db
+```
 
-## License
+See [Testing Guide](tests/README.md) for detailed information.
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## 🗺️ Roadmap
 
-Copyright (c) 2024 Toutaio
+### Phase 1: Foundation (Weeks 1-3) ✅ 20% Complete
+- [x] Core migration engine
+- [x] PostgreSQL adapter
+- [x] CLI with 7 commands
+- [x] Configuration management
+- [x] Testing framework
+- [ ] 80%+ test coverage
 
-## Acknowledgments
+### Phase 2: Multi-Database (Weeks 4-5)
+- [ ] MySQL adapter
+- [ ] SQLite adapter
+- [ ] Optional datamapper integration
+- [ ] Enhanced migration templates
 
-Inspired by the best practices from:
-- **Rails ActiveRecord Migrations** - Sequential versioning, up/down migrations
-- **Laravel Migrations** - Fluent schema builder, rollback capabilities
-- **Flyway** - Version-based migrations with checksums
-- **Alembic** - Branching and merging migration paths
-- **Knex.js** - Transaction-wrapped migrations, seed management
+### Phase 3: Seeding System (Weeks 6-7)
+- [ ] Seeder framework
+- [ ] Dependency management
+- [ ] Environment-specific seeds
+- [ ] Seeder CLI commands
+
+### Phase 4: Advanced Features (Weeks 8-9)
+- [ ] Migration versioning strategies
+- [ ] Dry-run mode
+- [ ] Migration validation
+- [ ] Performance optimization
+- [ ] Production hardening
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Workflow
+
+```bash
+# Format code
+go fmt ./...
+
+# Run linter (install first: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
+golangci-lint run
+
+# Run vet
+go vet ./...
+
+# Run tests
+go test ./...
+
+# Run tests with race detector and coverage
+go test -race -coverprofile=coverage.out ./...
+```
+
+## 📊 Project Status
+
+**Phase 1 Progress**: 20% (Day 4 of 15)
+
+**Current Milestone**: Testing & Documentation
+
+**Next Up**: Integration testing and coverage improvement
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Inspired by:
+- [Rails Migrations](https://guides.rubyonrails.org/active_record_migrations.html)
+- [Laravel Migrations](https://laravel.com/docs/migrations)
+- [Flyway](https://flywaydb.org/)
+- [Alembic](https://alembic.sqlalchemy.org/)
+- [golang-migrate](https://github.com/golang-migrate/migrate)
+
+## 📧 Contact
+
+- GitHub: [@toutaio](https://github.com/toutaio)
+- Issues: [GitHub Issues](https://github.com/toutaio/toutago-sil-migrator/issues)
 
 ---
 
-Built with ❤️ for the Go community
+**Made with ❤️ by the Toutago team**

@@ -161,7 +161,7 @@ func generateStructName(version, description string) string {
 	// Clean description
 	description = strings.ToLower(description)
 	description = strings.ReplaceAll(description, " ", "_")
-	
+
 	// Title case each word
 	parts := strings.Split(description, "_")
 	for i, part := range parts {
@@ -169,7 +169,7 @@ func generateStructName(version, description string) string {
 			parts[i] = strings.ToUpper(part[:1]) + part[1:]
 		}
 	}
-	
+
 	description = strings.Join(parts, "")
 	return fmt.Sprintf("Migration_%s_%s", version, description)
 }

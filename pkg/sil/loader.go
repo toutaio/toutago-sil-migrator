@@ -140,12 +140,12 @@ func (l *Loader) DiscoverMigrationFiles() ([]string, error) {
 func ParseMigrationFileName(filename string) (version string, description string, err error) {
 	// Remove directory path
 	base := filepath.Base(filename)
-	
+
 	// Check if it's a .go file
 	if filepath.Ext(base) != ".go" {
 		return "", "", fmt.Errorf("migration file must have .go extension: %s", filename)
 	}
-	
+
 	// Remove .go extension
 	base = strings.TrimSuffix(base, ".go")
 
@@ -174,15 +174,15 @@ func ParseMigrationFileName(filename string) (version string, description string
 // GenerateMigrationFileName generates a migration file name.
 func GenerateMigrationFileName(description string) string {
 	version := GenerateVersion()
-	
+
 	// Clean description: lowercase, replace spaces with underscores
 	description = strings.ToLower(description)
 	description = strings.ReplaceAll(description, " ", "_")
-	
+
 	// Remove any characters that aren't alphanumeric or underscore
 	re := regexp.MustCompile(`[^a-z0-9_]`)
 	description = re.ReplaceAllString(description, "")
-	
+
 	return fmt.Sprintf("%s_%s.go", version, description)
 }
 

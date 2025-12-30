@@ -46,7 +46,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 
 	// Create config with defaults
 	config := sil.DefaultConfig()
-	
+
 	// Update database URL if provided via environment
 	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
 		config.DatabaseURL = dbURL

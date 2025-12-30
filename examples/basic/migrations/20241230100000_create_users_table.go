@@ -27,7 +27,7 @@ func (m *Migration_20241230100000_CreateUsersTable) Description() string {
 // Up applies the migration.
 func (m *Migration_20241230100000_CreateUsersTable) Up(adapter sil.DatabaseAdapter) error {
 	ctx := context.Background()
-	
+
 	return adapter.Exec(ctx, `
 		CREATE TABLE users (
 			id SERIAL PRIMARY KEY,
@@ -42,6 +42,6 @@ func (m *Migration_20241230100000_CreateUsersTable) Up(adapter sil.DatabaseAdapt
 // Down reverts the migration.
 func (m *Migration_20241230100000_CreateUsersTable) Down(adapter sil.DatabaseAdapter) error {
 	ctx := context.Background()
-	
+
 	return adapter.Exec(ctx, `DROP TABLE IF EXISTS users`)
 }

@@ -76,7 +76,7 @@ func detectDatabaseType(url string) string {
 func printError(format string, args ...interface{}) {
 	const colorRed = "\033[31m"
 	const colorReset = "\033[0m"
-	
+
 	if isColorSupported() {
 		fmt.Fprintf(os.Stderr, "%s✗ "+format+"%s\n", colorRed, args, colorReset)
 	} else {
@@ -88,7 +88,7 @@ func printError(format string, args ...interface{}) {
 func printSuccess(format string, args ...interface{}) {
 	const colorGreen = "\033[32m"
 	const colorReset = "\033[0m"
-	
+
 	if isColorSupported() {
 		fmt.Printf("%s✓ "+format+"%s\n", colorGreen, args, colorReset)
 	} else {
@@ -102,12 +102,12 @@ func isColorSupported() bool {
 	if os.Getenv("NO_COLOR") != "" {
 		return false
 	}
-	
+
 	// Check if running in a terminal
 	if os.Getenv("TERM") == "dumb" {
 		return false
 	}
-	
+
 	// Assume color is supported on Unix-like systems
 	return true
 }

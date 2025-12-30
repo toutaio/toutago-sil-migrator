@@ -74,7 +74,7 @@ func TestGenerateVersion(t *testing.T) {
 	// Should be close to current time
 	now := time.Now()
 	expected := now.Format("20060102150405")
-	
+
 	// Allow 1 second difference
 	if version[:12] != expected[:12] {
 		t.Errorf("GenerateVersion() = %s, expected to start with %s", version, expected[:12])

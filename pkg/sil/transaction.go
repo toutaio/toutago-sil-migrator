@@ -27,7 +27,7 @@ func newTransaction(tx *sql.Tx, logger Logger) Transaction {
 // Commit commits the transaction.
 func (t *transaction) Commit() error {
 	t.logger.Debug("Committing transaction")
-	
+
 	if err := t.tx.Commit(); err != nil {
 		return fmt.Errorf("transaction commit failed: %w", err)
 	}
@@ -38,7 +38,7 @@ func (t *transaction) Commit() error {
 // Rollback rolls back the transaction.
 func (t *transaction) Rollback() error {
 	t.logger.Debug("Rolling back transaction")
-	
+
 	if err := t.tx.Rollback(); err != nil {
 		// Ignore "sql: transaction has already been committed or rolled back"
 		if err != sql.ErrTxDone {
@@ -52,7 +52,7 @@ func (t *transaction) Rollback() error {
 // Exec executes a SQL statement within the transaction.
 func (t *transaction) Exec(ctx context.Context, query string, args ...interface{}) error {
 	t.logger.Debug("Executing query in transaction: %s", truncateQuery(query))
-	
+
 	_, err := t.tx.ExecContext(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("transaction exec failed: %w", err)
@@ -64,7 +64,7 @@ func (t *transaction) Exec(ctx context.Context, query string, args ...interface{
 // Query executes a SQL query within the transaction.
 func (t *transaction) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
 	t.logger.Debug("Querying in transaction: %s", truncateQuery(query))
-	
+
 	rows, err := t.tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("transaction query failed: %w", err)
