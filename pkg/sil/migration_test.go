@@ -326,185 +326,185 @@ func TestRegisterMigration_Duplicate(t *testing.T) {
 }
 
 func TestNewBaseMigration(t *testing.T) {
-upFunc := func(adapter DatabaseAdapter) error { return nil }
-downFunc := func(adapter DatabaseAdapter) error { return nil }
+	upFunc := func(adapter DatabaseAdapter) error { return nil }
+	downFunc := func(adapter DatabaseAdapter) error { return nil }
 
-migration := NewBaseMigration("20240101000000", "create users", upFunc, downFunc)
+	migration := NewBaseMigration("20240101000000", "create users", upFunc, downFunc)
 
-if migration.Version() != "20240101000000" {
-t.Errorf("Expected version 20240101000000, got %s", migration.Version())
-}
+	if migration.Version() != "20240101000000" {
+		t.Errorf("Expected version 20240101000000, got %s", migration.Version())
+	}
 
-if migration.Description() != "create users" {
-t.Errorf("Expected description 'create users', got %s", migration.Description())
-}
+	if migration.Description() != "create users" {
+		t.Errorf("Expected description 'create users', got %s", migration.Description())
+	}
 }
 
 func TestBaseMigration_Up(t *testing.T) {
-called := false
-upFunc := func(adapter DatabaseAdapter) error {
-called = true
-return nil
-}
+	called := false
+	upFunc := func(adapter DatabaseAdapter) error {
+		called = true
+		return nil
+	}
 
-migration := NewBaseMigration("20240101000000", "test", upFunc, nil)
+	migration := NewBaseMigration("20240101000000", "test", upFunc, nil)
 
-err := migration.Up(nil)
-if err != nil {
-t.Errorf("Expected no error, got %v", err)
-}
+	err := migration.Up(nil)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
 
-if !called {
-t.Error("Expected Up function to be called")
-}
+	if !called {
+		t.Error("Expected Up function to be called")
+	}
 }
 
 func TestBaseMigration_Down(t *testing.T) {
-called := false
-downFunc := func(adapter DatabaseAdapter) error {
-called = true
-return nil
-}
+	called := false
+	downFunc := func(adapter DatabaseAdapter) error {
+		called = true
+		return nil
+	}
 
-migration := NewBaseMigration("20240101000000", "test", nil, downFunc)
+	migration := NewBaseMigration("20240101000000", "test", nil, downFunc)
 
-err := migration.Down(nil)
-if err != nil {
-t.Errorf("Expected no error, got %v", err)
-}
+	err := migration.Down(nil)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
 
-if !called {
-t.Error("Expected Down function to be called")
-}
+	if !called {
+		t.Error("Expected Down function to be called")
+	}
 }
 
 func TestBaseMigration_UpNilFunc(t *testing.T) {
-migration := NewBaseMigration("20240101000000", "test", nil, nil)
+	migration := NewBaseMigration("20240101000000", "test", nil, nil)
 
-err := migration.Up(nil)
-if err == nil {
-t.Error("Expected error for nil Up function", err)
-}
+	err := migration.Up(nil)
+	if err == nil {
+		t.Error("Expected error for nil Up function", err)
+	}
 }
 
 func TestBaseMigration_DownNilFunc(t *testing.T) {
-migration := NewBaseMigration("20240101000000", "test", nil, nil)
+	migration := NewBaseMigration("20240101000000", "test", nil, nil)
 
-err := migration.Down(nil)
-if err == nil {
-t.Errorf("Expected no error for nil Down function, got %v", err)
-}
+	err := migration.Down(nil)
+	if err == nil {
+		t.Errorf("Expected no error for nil Down function, got %v", err)
+	}
 }
 
 func TestClearRegisteredMigrations(t *testing.T) {
-ClearRegisteredMigrations()
+	ClearRegisteredMigrations()
 
-m1 := NewBaseMigration("20240101000000", "first", nil, nil)
-m2 := NewBaseMigration("20240102000000", "second", nil, nil)
-RegisterMigration(m1)
-RegisterMigration(m2)
+	m1 := NewBaseMigration("20240101000000", "first", nil, nil)
+	m2 := NewBaseMigration("20240102000000", "second", nil, nil)
+	RegisterMigration(m1)
+	RegisterMigration(m2)
 
-migrations := GetRegisteredMigrations()
-if len(migrations) != 2 {
-t.Errorf("Expected 2 registered migrations, got %d", len(migrations))
-}
+	migrations := GetRegisteredMigrations()
+	if len(migrations) != 2 {
+		t.Errorf("Expected 2 registered migrations, got %d", len(migrations))
+	}
 
-ClearRegisteredMigrations()
+	ClearRegisteredMigrations()
 
-migrations = GetRegisteredMigrations()
-if len(migrations) != 0 {
-t.Errorf("Expected 0 migrations after clear, got %d", len(migrations))
-}
+	migrations = GetRegisteredMigrations()
+	if len(migrations) != 0 {
+		t.Errorf("Expected 0 migrations after clear, got %d", len(migrations))
+	}
 }
 
 func TestGetMigrationStatus_Multiple(t *testing.T) {
-ClearRegisteredMigrations()
-defer ClearRegisteredMigrations()
+	ClearRegisteredMigrations()
+	defer ClearRegisteredMigrations()
 
-m1 := NewBaseMigration("20240101000000", "first", nil, nil)
-m2 := NewBaseMigration("20240102000000", "second", nil, nil)
-m3 := NewBaseMigration("20240103000000", "third", nil, nil)
-RegisterMigration(m1)
-RegisterMigration(m2)
-RegisterMigration(m3)
+	m1 := NewBaseMigration("20240101000000", "first", nil, nil)
+	m2 := NewBaseMigration("20240102000000", "second", nil, nil)
+	m3 := NewBaseMigration("20240103000000", "third", nil, nil)
+	RegisterMigration(m1)
+	RegisterMigration(m2)
+	RegisterMigration(m3)
 
-applied := []MigrationRecord{
-{Version: "20240101000000", Batch: 1},
-{Version: "20240102000000", Batch: 1},
-}
+	applied := []MigrationRecord{
+		{Version: "20240101000000", Batch: 1},
+		{Version: "20240102000000", Batch: 1},
+	}
 
-statuses := GetMigrationStatus(GetRegisteredMigrations(), applied)
+	statuses := GetMigrationStatus(GetRegisteredMigrations(), applied)
 
-if len(statuses) != 3 {
-t.Errorf("Expected 3 statuses, got %d", len(statuses))
-}
+	if len(statuses) != 3 {
+		t.Errorf("Expected 3 statuses, got %d", len(statuses))
+	}
 
-if !statuses[0].Applied {
-t.Error("Expected first migration to be applied")
-}
+	if !statuses[0].Applied {
+		t.Error("Expected first migration to be applied")
+	}
 
-if !statuses[1].Applied {
-t.Error("Expected second migration to be applied")
-}
+	if !statuses[1].Applied {
+		t.Error("Expected second migration to be applied")
+	}
 
-if statuses[2].Applied {
-t.Error("Expected third migration to not be applied")
-}
+	if statuses[2].Applied {
+		t.Error("Expected third migration to not be applied")
+	}
 }
 
 func TestValidateVersion_ValidFormats(t *testing.T) {
-valid := []string{
-"20240101000000",
-"20991231235959",
-"20240630120000",
-}
+	valid := []string{
+		"20240101000000",
+		"20991231235959",
+		"20240630120000",
+	}
 
-for _, version := range valid {
-t.Run(version, func(t *testing.T) {
-err := ValidateVersion(version)
-if err != nil {
-t.Errorf("Expected %s to be valid, got error: %v", version, err)
-}
-})
-}
+	for _, version := range valid {
+		t.Run(version, func(t *testing.T) {
+			err := ValidateVersion(version)
+			if err != nil {
+				t.Errorf("Expected %s to be valid, got error: %v", version, err)
+			}
+		})
+	}
 }
 
 func TestValidateVersion_InvalidFormats(t *testing.T) {
-invalid := []string{
-"",
-"123",
-"2024010100000",  // Too short
-"202401010000000", // Too long
-"abcd0101000000",  // Non-numeric
-"20241301000000",  // Invalid month
-"20240132000000",  // Invalid day
-"20240101250000",  // Invalid hour
-"20240101006000",  // Invalid minute
-"20240101000060",  // Invalid second
-}
+	invalid := []string{
+		"",
+		"123",
+		"2024010100000",   // Too short
+		"202401010000000", // Too long
+		"abcd0101000000",  // Non-numeric
+		"20241301000000",  // Invalid month
+		"20240132000000",  // Invalid day
+		"20240101250000",  // Invalid hour
+		"20240101006000",  // Invalid minute
+		"20240101000060",  // Invalid second
+	}
 
-for _, version := range invalid {
-t.Run(version, func(t *testing.T) {
-err := ValidateVersion(version)
-if err == nil {
-t.Errorf("Expected %s to be invalid", version)
-}
-})
-}
+	for _, version := range invalid {
+		t.Run(version, func(t *testing.T) {
+			err := ValidateVersion(version)
+			if err == nil {
+				t.Errorf("Expected %s to be invalid", version)
+			}
+		})
+	}
 }
 
 func TestFilterPendingMigrations_Edge(t *testing.T) {
-// Test with empty lists
-pending := FilterPendingMigrations([]Migration{}, []MigrationRecord{})
-if len(pending) != 0 {
-t.Error("Expected empty result for empty inputs")
-}
+	// Test with empty lists
+	pending := FilterPendingMigrations([]Migration{}, []MigrationRecord{})
+	if len(pending) != 0 {
+		t.Error("Expected empty result for empty inputs")
+	}
 }
 
 func TestFilterAppliedMigrations_Edge(t *testing.T) {
-// Test with empty lists
-applied := FilterAppliedMigrations([]Migration{}, []MigrationRecord{})
-if len(applied) != 0 {
-t.Error("Expected empty result for empty inputs")
-}
+	// Test with empty lists
+	applied := FilterAppliedMigrations([]Migration{}, []MigrationRecord{})
+	if len(applied) != 0 {
+		t.Error("Expected empty result for empty inputs")
+	}
 }

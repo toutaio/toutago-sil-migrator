@@ -6,7 +6,7 @@ import (
 
 func TestDefaultLogger(t *testing.T) {
 	logger := NewDefaultLogger(true)
-	
+
 	// Should not panic
 	logger.Info("test info")
 	logger.Warn("test warn")
@@ -16,7 +16,7 @@ func TestDefaultLogger(t *testing.T) {
 
 func TestNoopLogger(t *testing.T) {
 	logger := NewNoopLogger()
-	
+
 	// Should not panic and do nothing
 	logger.Info("test info")
 	logger.Warn("test warn")
@@ -27,13 +27,13 @@ func TestNoopLogger(t *testing.T) {
 func TestColorLogger(t *testing.T) {
 	// Test with color enabled
 	logger := NewColorLogger(true)
-	
+
 	// Should not panic
 	logger.Info("test info")
 	logger.Warn("test warn")
 	logger.Error("test error")
 	logger.Debug("test debug")
-	
+
 	// Test with color disabled
 	logger = NewColorLogger(false)
 	logger.Info("test info")
@@ -54,7 +54,7 @@ func TestColorLogger_Output(t *testing.T) {
 
 func TestColorLogger_FormatString(t *testing.T) {
 	logger := NewColorLogger(false)
-	
+
 	// Test formatting
 	logger.Info("User %s logged in from %s", "john", "192.168.1.1")
 	logger.Warn("Disk usage at %d%%", 85)
@@ -64,7 +64,7 @@ func TestColorLogger_FormatString(t *testing.T) {
 
 func TestDefaultLogger_Output(t *testing.T) {
 	logger := NewDefaultLogger(false)
-	
+
 	// These should not panic
 	logger.Info("message")
 	logger.Warn("message")
@@ -83,7 +83,7 @@ func TestLoggerInterface(t *testing.T) {
 func TestColorOutput(t *testing.T) {
 	// Test that color codes are used when enabled
 	logger := NewColorLogger(true)
-	
+
 	// Just verify it doesn't crash
 	logger.Info("colored info")
 	logger.Warn("colored warn")
@@ -94,7 +94,7 @@ func TestColorOutput(t *testing.T) {
 func TestNoColorOutput(t *testing.T) {
 	// Test that no color codes are used when disabled
 	logger := NewColorLogger(false)
-	
+
 	// Just verify it doesn't crash
 	logger.Info("plain info")
 	logger.Warn("plain warn")

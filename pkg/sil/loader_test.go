@@ -232,141 +232,141 @@ func TestCheckForOrphanedFiles_NoOrphans(t *testing.T) {
 }
 
 func TestLoader_LoadPending_AllApplied(t *testing.T) {
-ClearRegisteredMigrations()
-defer ClearRegisteredMigrations()
+	ClearRegisteredMigrations()
+	defer ClearRegisteredMigrations()
 
-m1 := NewBaseMigration("20240101000000", "first", nil, nil)
-RegisterMigration(m1)
+	m1 := NewBaseMigration("20240101000000", "first", nil, nil)
+	RegisterMigration(m1)
 
-loader := NewLoader("./migrations", NewNoopLogger())
+	loader := NewLoader("./migrations", NewNoopLogger())
 
-// All migrations are applied
-applied := []MigrationRecord{
-{Version: "20240101000000", Batch: 1},
-}
+	// All migrations are applied
+	applied := []MigrationRecord{
+		{Version: "20240101000000", Batch: 1},
+	}
 
-pending, err := loader.LoadPending(applied)
-if err != nil {
-t.Fatalf("LoadPending() error = %v", err)
-}
+	pending, err := loader.LoadPending(applied)
+	if err != nil {
+		t.Fatalf("LoadPending() error = %v", err)
+	}
 
-if len(pending) != 0 {
-t.Errorf("Expected 0 pending migrations, got %d", len(pending))
-}
+	if len(pending) != 0 {
+		t.Errorf("Expected 0 pending migrations, got %d", len(pending))
+	}
 }
 
 func TestLoader_GetMigrationPath(t *testing.T) {
-tmpDir := t.TempDir()
+	tmpDir := t.TempDir()
 
-// Create migration file
-filename := "20240101000000_create_users.go"
-path := filepath.Join(tmpDir, filename)
-if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
-t.Fatalf("Failed to create file: %v", err)
-}
+	// Create migration file
+	filename := "20240101000000_create_users.go"
+	path := filepath.Join(tmpDir, filename)
+	if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
+		t.Fatalf("Failed to create file: %v", err)
+	}
 
-loader := NewLoader(tmpDir, NewNoopLogger())
+	loader := NewLoader(tmpDir, NewNoopLogger())
 
-foundPath, err := loader.GetMigrationPath("20240101000000")
-if err != nil {
-t.Fatalf("GetMigrationPath() error = %v", err)
-}
+	foundPath, err := loader.GetMigrationPath("20240101000000")
+	if err != nil {
+		t.Fatalf("GetMigrationPath() error = %v", err)
+	}
 
-if foundPath != path {
-t.Errorf("Expected path %s, got %s", path, foundPath)
-}
+	if foundPath != path {
+		t.Errorf("Expected path %s, got %s", path, foundPath)
+	}
 }
 
 func TestLoader_GetMigrationPath_NotFound(t *testing.T) {
-tmpDir := t.TempDir()
-loader := NewLoader(tmpDir, NewNoopLogger())
+	tmpDir := t.TempDir()
+	loader := NewLoader(tmpDir, NewNoopLogger())
 
-_, err := loader.GetMigrationPath("20240101000000")
-if err == nil {
-t.Error("Expected error for nonexistent migration")
-}
+	_, err := loader.GetMigrationPath("20240101000000")
+	if err == nil {
+		t.Error("Expected error for nonexistent migration")
+	}
 }
 
 func TestParseMigrationFileName_EdgeCases(t *testing.T) {
-tests := []struct {
-name        string
-filename    string
-wantVersion string
-wantDesc    string
-wantErr     bool
-}{
-{
-name:        "Standard format",
-filename:    "20240101000000_create_users.go",
-wantVersion: "20240101000000",
-wantDesc:    "create users",
-wantErr:     false,
-},
-{
-name:        "With underscores in description",
-filename:    "20240101000000_create_user_profiles.go",
-wantVersion: "20240101000000",
-wantDesc:    "create user profiles",
-wantErr:     false,
-},
-{
-name:     "Invalid format",
-filename: "invalid.go",
-wantErr:  true,
-},
-{
-name:     "Missing extension",
-filename: "20240101000000_create_users",
-wantErr:  true,
-},
-}
+	tests := []struct {
+		name        string
+		filename    string
+		wantVersion string
+		wantDesc    string
+		wantErr     bool
+	}{
+		{
+			name:        "Standard format",
+			filename:    "20240101000000_create_users.go",
+			wantVersion: "20240101000000",
+			wantDesc:    "create users",
+			wantErr:     false,
+		},
+		{
+			name:        "With underscores in description",
+			filename:    "20240101000000_create_user_profiles.go",
+			wantVersion: "20240101000000",
+			wantDesc:    "create user profiles",
+			wantErr:     false,
+		},
+		{
+			name:     "Invalid format",
+			filename: "invalid.go",
+			wantErr:  true,
+		},
+		{
+			name:     "Missing extension",
+			filename: "20240101000000_create_users",
+			wantErr:  true,
+		},
+	}
 
-for _, tt := range tests {
-t.Run(tt.name, func(t *testing.T) {
-version, desc, err := ParseMigrationFileName(tt.filename)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			version, desc, err := ParseMigrationFileName(tt.filename)
 
-if tt.wantErr {
-if err == nil {
-t.Error("Expected error but got none")
-}
-return
-}
+			if tt.wantErr {
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
+				return
+			}
 
-if err != nil {
-t.Fatalf("Unexpected error: %v", err)
-}
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
 
-if version != tt.wantVersion {
-t.Errorf("Expected version %s, got %s", tt.wantVersion, version)
-}
+			if version != tt.wantVersion {
+				t.Errorf("Expected version %s, got %s", tt.wantVersion, version)
+			}
 
-if desc != tt.wantDesc {
-t.Errorf("Expected description %s, got %s", tt.wantDesc, desc)
-}
-})
-}
+			if desc != tt.wantDesc {
+				t.Errorf("Expected description %s, got %s", tt.wantDesc, desc)
+			}
+		})
+	}
 }
 
 func TestGenerateMigrationFileName_Consistency(t *testing.T) {
-desc := "create users"
+	desc := "create users"
 
-filename1 := GenerateMigrationFileName(desc)
-filename2 := GenerateMigrationFileName(desc)
+	filename1 := GenerateMigrationFileName(desc)
+	filename2 := GenerateMigrationFileName(desc)
 
-// Should generate different filenames due to timestamp
-if filename1 == filename2 {
-// This might happen if called in same microsecond, which is fine
-}
+	// Should generate different filenames due to timestamp
+	if filename1 == filename2 {
+		// This might happen if called in same microsecond, which is fine
+	}
 
-// Both should be valid
-_, _, err1 := ParseMigrationFileName(filename1)
-_, _, err2 := ParseMigrationFileName(filename2)
+	// Both should be valid
+	_, _, err1 := ParseMigrationFileName(filename1)
+	_, _, err2 := ParseMigrationFileName(filename2)
 
-if err1 != nil {
-t.Errorf("Generated invalid filename: %s", filename1)
-}
+	if err1 != nil {
+		t.Errorf("Generated invalid filename: %s", filename1)
+	}
 
-if err2 != nil {
-t.Errorf("Generated invalid filename: %s", filename2)
-}
+	if err2 != nil {
+		t.Errorf("Generated invalid filename: %s", filename2)
+	}
 }

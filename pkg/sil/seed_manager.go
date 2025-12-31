@@ -172,7 +172,7 @@ func (sm *seedManager) Status(ctx context.Context) ([]SeedStatus, error) {
 
 	// Get all registered seeders
 	seeders := GetRegisteredSeeders()
-	
+
 	// Get executed seeders
 	executed, err := sm.getExecutedSeeders(ctx)
 	if err != nil {
@@ -194,7 +194,7 @@ func (sm *seedManager) Status(ctx context.Context) ([]SeedStatus, error) {
 		envMatch := sm.matchesEnvironment(seeder)
 		skipReason := ""
 		if !envMatch {
-			skipReason = fmt.Sprintf("environment mismatch (requires: %v, current: %s)", 
+			skipReason = fmt.Sprintf("environment mismatch (requires: %v, current: %s)",
 				seeder.Environments(), sm.environment)
 		}
 
@@ -250,7 +250,7 @@ func (sm *seedManager) filterByEnvironment(seeders []Seeder) []Seeder {
 // matchesEnvironment checks if a seeder should run in the current environment.
 func (sm *seedManager) matchesEnvironment(seeder Seeder) bool {
 	envs := seeder.Environments()
-	
+
 	// If no environments specified, run in all environments
 	if len(envs) == 0 {
 		return true

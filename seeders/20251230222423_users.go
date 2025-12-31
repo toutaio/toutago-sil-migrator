@@ -13,7 +13,7 @@ func init() {
 // NewUsersSeeder creates a new users seeder
 func NewUsersSeeder() sil.Seeder {
 	return sil.NewBaseSeeder("users", seedUsers).
-		SetDependencies(). // Add dependencies here
+		SetDependencies().                     // Add dependencies here
 		SetEnvironments("development", "test") // Adjust environments
 }
 
@@ -25,6 +25,6 @@ func seedUsers(ctx context.Context, adapter sil.DatabaseAdapter) error {
 	//     INSERT INTO users (name, description)
 	//     VALUES ('Example', 'Example description')
 	// `)
-	
+
 	return nil
 }

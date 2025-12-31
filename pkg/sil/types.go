@@ -133,7 +133,7 @@ func (c *Config) Validate() error {
 // Merge merges another configuration into this one, with the other config taking precedence.
 func (c *Config) Merge(other *Config) *Config {
 	result := *c
-	
+
 	if other == nil {
 		return &result
 	}

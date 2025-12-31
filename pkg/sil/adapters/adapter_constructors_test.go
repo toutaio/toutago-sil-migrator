@@ -65,7 +65,7 @@ func TestNewPostgresAdapter(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "empty database URL",
+			name:   "empty database URL",
 			config: &sil.Config{
 				// Postgres adapter doesn't validate URL in constructor
 			},

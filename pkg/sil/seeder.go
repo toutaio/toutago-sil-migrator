@@ -8,10 +8,10 @@ import (
 
 // BaseSeeder provides a base implementation of the Seeder interface.
 type BaseSeeder struct {
-	name         string
-	dependencies []string
-	environments []string
-	seedFunc     func(ctx context.Context, adapter DatabaseAdapter) error
+	name          string
+	dependencies  []string
+	environments  []string
+	seedFunc      func(ctx context.Context, adapter DatabaseAdapter) error
 	shouldRunFunc func(ctx context.Context, adapter DatabaseAdapter) (bool, error)
 }
 

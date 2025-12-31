@@ -298,176 +298,176 @@ func findSubstring(s, substr string) bool {
 }
 
 func TestLoadConfigWithDefaults(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "sil.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "sil.yaml")
 
-// Create minimal config file
-configContent := `database_url: "postgres://localhost/test"`
-if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	// Create minimal config file
+	configContent := `database_url: "postgres://localhost/test"`
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-config, err := LoadConfigWithDefaults(configPath)
-if err != nil {
-t.Fatalf("LoadConfigWithDefaults() error = %v", err)
-}
+	config, err := LoadConfigWithDefaults(configPath)
+	if err != nil {
+		t.Fatalf("LoadConfigWithDefaults() error = %v", err)
+	}
 
-if config.DatabaseURL != "postgres://localhost/test" {
-t.Errorf("Expected database_url to be loaded")
-}
+	if config.DatabaseURL != "postgres://localhost/test" {
+		t.Errorf("Expected database_url to be loaded")
+	}
 
-// Should have defaults
-if config.MigrationsDir != "./migrations" {
-t.Errorf("Expected default migrations_dir")
-}
+	// Should have defaults
+	if config.MigrationsDir != "./migrations" {
+		t.Errorf("Expected default migrations_dir")
+	}
 
-if config.TableName != "sil_migrations" {
-t.Errorf("Expected default table_name")
-}
+	if config.TableName != "sil_migrations" {
+		t.Errorf("Expected default table_name")
+	}
 }
 
 func TestFindConfigFile(t *testing.T) {
-tmpDir := t.TempDir()
+	tmpDir := t.TempDir()
 
-// Create config in tmpDir
-configPath := filepath.Join(tmpDir, "sil.yaml")
-if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	// Create config in tmpDir
+	configPath := filepath.Join(tmpDir, "sil.yaml")
+	if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-// Change to tmpDir
-oldDir, err := os.Getwd()
-if err != nil {
-t.Fatalf("Failed to get working directory: %v", err)
-}
-defer os.Chdir(oldDir)
+	// Change to tmpDir
+	oldDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get working directory: %v", err)
+	}
+	defer os.Chdir(oldDir)
 
-if err := os.Chdir(tmpDir); err != nil {
-t.Fatalf("Failed to change directory: %v", err)
-}
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("Failed to change directory: %v", err)
+	}
 
-// Find config
-found, err := FindConfigFile()
-if err != nil {
-t.Fatalf("FindConfigFile() error = %v", err)
-}
+	// Find config
+	found, err := FindConfigFile()
+	if err != nil {
+		t.Fatalf("FindConfigFile() error = %v", err)
+	}
 
-if found != configPath {
-t.Errorf("FindConfigFile() = %s, want %s", found, configPath)
-}
+	if found != configPath {
+		t.Errorf("FindConfigFile() = %s, want %s", found, configPath)
+	}
 }
 
 func TestFindConfigFile_NotFound(t *testing.T) {
-tmpDir := t.TempDir()
+	tmpDir := t.TempDir()
 
-oldDir, err := os.Getwd()
-if err != nil {
-t.Fatalf("Failed to get working directory: %v", err)
-}
-defer os.Chdir(oldDir)
+	oldDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get working directory: %v", err)
+	}
+	defer os.Chdir(oldDir)
 
-if err := os.Chdir(tmpDir); err != nil {
-t.Fatalf("Failed to change directory: %v", err)
-}
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("Failed to change directory: %v", err)
+	}
 
-// Should not find config
-_, err = FindConfigFile()
-if err == nil {
-t.Error("Expected error when config not found")
-}
+	// Should not find config
+	_, err = FindConfigFile()
+	if err == nil {
+		t.Error("Expected error when config not found")
+	}
 }
 
 func TestLoadConfigAuto(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "sil.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "sil.yaml")
 
-// Create config file
-configContent := `database_url: "postgres://localhost/autotest"`
-if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	// Create config file
+	configContent := `database_url: "postgres://localhost/autotest"`
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-oldDir, err := os.Getwd()
-if err != nil {
-t.Fatalf("Failed to get working directory: %v", err)
-}
-defer os.Chdir(oldDir)
+	oldDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get working directory: %v", err)
+	}
+	defer os.Chdir(oldDir)
 
-if err := os.Chdir(tmpDir); err != nil {
-t.Fatalf("Failed to change directory: %v", err)
-}
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("Failed to change directory: %v", err)
+	}
 
-config, err := LoadConfigAuto()
-if err != nil {
-t.Fatalf("LoadConfigAuto() error = %v", err)
-}
+	config, err := LoadConfigAuto()
+	if err != nil {
+		t.Fatalf("LoadConfigAuto() error = %v", err)
+	}
 
-if config.DatabaseURL != "postgres://localhost/autotest" {
-t.Errorf("Expected database_url from auto-loaded config")
-}
+	if config.DatabaseURL != "postgres://localhost/autotest" {
+		t.Errorf("Expected database_url from auto-loaded config")
+	}
 }
 
 func TestInitConfig(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "sil.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "sil.yaml")
 
-err := InitConfig(configPath)
-if err != nil {
-t.Fatalf("InitConfig() error = %v", err)
-}
+	err := InitConfig(configPath)
+	if err != nil {
+		t.Fatalf("InitConfig() error = %v", err)
+	}
 
-// Check file exists
-if _, err := os.Stat(configPath); os.IsNotExist(err) {
-t.Error("Expected config file to be created")
-}
+	// Check file exists
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		t.Error("Expected config file to be created")
+	}
 
-// Check can be loaded
-config, err := LoadConfig(configPath)
-if err != nil {
-t.Fatalf("Failed to load initialized config: %v", err)
-}
+	// Check can be loaded
+	config, err := LoadConfig(configPath)
+	if err != nil {
+		t.Fatalf("Failed to load initialized config: %v", err)
+	}
 
-if config.TableName != "sil_migrations" {
-t.Errorf("Expected default table_name in initialized config")
-}
+	if config.TableName != "sil_migrations" {
+		t.Errorf("Expected default table_name in initialized config")
+	}
 }
 
 func TestLoadConfigFromEnv_Complete(t *testing.T) {
-// Save current env
-oldURL := os.Getenv("SIL_DATABASE_URL")
-oldDir := os.Getenv("SIL_MIGRATIONS_DIR")
-oldTable := os.Getenv("SIL_TABLE_NAME")
-defer func() {
-os.Setenv("SIL_DATABASE_URL", oldURL)
-os.Setenv("SIL_MIGRATIONS_DIR", oldDir)
-os.Setenv("SIL_TABLE_NAME", oldTable)
-}()
+	// Save current env
+	oldURL := os.Getenv("SIL_DATABASE_URL")
+	oldDir := os.Getenv("SIL_MIGRATIONS_DIR")
+	oldTable := os.Getenv("SIL_TABLE_NAME")
+	defer func() {
+		os.Setenv("SIL_DATABASE_URL", oldURL)
+		os.Setenv("SIL_MIGRATIONS_DIR", oldDir)
+		os.Setenv("SIL_TABLE_NAME", oldTable)
+	}()
 
-// Set env vars
-os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
-os.Setenv("SIL_MIGRATIONS_DIR", "./test_migrations")
-os.Setenv("SIL_TABLE_NAME", "test_migrations")
+	// Set env vars
+	os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
+	os.Setenv("SIL_MIGRATIONS_DIR", "./test_migrations")
+	os.Setenv("SIL_TABLE_NAME", "test_migrations")
 
-config := LoadConfigFromEnv(DefaultConfig())
+	config := LoadConfigFromEnv(DefaultConfig())
 
-if config.DatabaseURL != "postgres://localhost/envtest" {
-t.Errorf("Expected database_url from env")
-}
+	if config.DatabaseURL != "postgres://localhost/envtest" {
+		t.Errorf("Expected database_url from env")
+	}
 
-if config.MigrationsDir != "./test_migrations" {
-t.Errorf("Expected migrations_dir from env")
-}
+	if config.MigrationsDir != "./test_migrations" {
+		t.Errorf("Expected migrations_dir from env")
+	}
 
-if config.TableName != "test_migrations" {
-t.Errorf("Expected table_name from env")
-}
+	if config.TableName != "test_migrations" {
+		t.Errorf("Expected table_name from env")
+	}
 }
 
 func TestLoadConfig_YAML(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "test.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "test.yaml")
 
-configContent := `
+	configContent := `
 database_url: "postgres://localhost/yamltest"
 migrations_dir: "./yaml_migrations"
 seeders_dir: "./yaml_seeders"
@@ -475,296 +475,296 @@ table_name: "yaml_migrations"
 environment: "test"
 verbose: true
 `
-if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-config, err := LoadConfig(configPath)
-if err != nil {
-t.Fatalf("LoadConfig() error = %v", err)
-}
+	config, err := LoadConfig(configPath)
+	if err != nil {
+		t.Fatalf("LoadConfig() error = %v", err)
+	}
 
-if config.DatabaseURL != "postgres://localhost/yamltest" {
-t.Errorf("Expected DatabaseURL to be loaded from YAML")
-}
+	if config.DatabaseURL != "postgres://localhost/yamltest" {
+		t.Errorf("Expected DatabaseURL to be loaded from YAML")
+	}
 
-if config.MigrationsDir != "./yaml_migrations" {
-t.Errorf("Expected MigrationsDir to be loaded from YAML")
-}
+	if config.MigrationsDir != "./yaml_migrations" {
+		t.Errorf("Expected MigrationsDir to be loaded from YAML")
+	}
 
-if !config.Verbose {
-t.Errorf("Expected Verbose to be true")
-}
+	if !config.Verbose {
+		t.Errorf("Expected Verbose to be true")
+	}
 }
 
 func TestLoadConfig_JSON(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "test.json")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "test.json")
 
-configContent := `{
+	configContent := `{
 "database_url": "postgres://localhost/jsontest",
 "migrations_dir": "./json_migrations",
 "table_name": "json_migrations",
 "environment": "test"
 }`
-if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-config, err := LoadConfig(configPath)
-if err != nil {
-t.Fatalf("LoadConfig() error = %v", err)
-}
+	config, err := LoadConfig(configPath)
+	if err != nil {
+		t.Fatalf("LoadConfig() error = %v", err)
+	}
 
-if config.DatabaseURL != "postgres://localhost/jsontest" {
-t.Errorf("Expected DatabaseURL to be loaded from JSON")
-}
+	if config.DatabaseURL != "postgres://localhost/jsontest" {
+		t.Errorf("Expected DatabaseURL to be loaded from JSON")
+	}
 
-if config.MigrationsDir != "./json_migrations" {
-t.Errorf("Expected MigrationsDir to be loaded from JSON")
-}
+	if config.MigrationsDir != "./json_migrations" {
+		t.Errorf("Expected MigrationsDir to be loaded from JSON")
+	}
 }
 
 func TestLoadConfig_FileNotFound(t *testing.T) {
-_, err := LoadConfig("/nonexistent/config.yaml")
-if err == nil {
-t.Error("Expected error for nonexistent file")
-}
+	_, err := LoadConfig("/nonexistent/config.yaml")
+	if err == nil {
+		t.Error("Expected error for nonexistent file")
+	}
 }
 
 func TestLoadConfig_InvalidYAML(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "invalid.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "invalid.yaml")
 
-if err := os.WriteFile(configPath, []byte("invalid: [yaml: content"), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	if err := os.WriteFile(configPath, []byte("invalid: [yaml: content"), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-_, err := LoadConfig(configPath)
-if err == nil {
-t.Error("Expected error for invalid YAML")
-}
+	_, err := LoadConfig(configPath)
+	if err == nil {
+		t.Error("Expected error for invalid YAML")
+	}
 }
 
 func TestLoadConfig_InvalidJSON(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "invalid.json")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "invalid.json")
 
-if err := os.WriteFile(configPath, []byte("{invalid json"), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	if err := os.WriteFile(configPath, []byte("{invalid json"), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-_, err := LoadConfig(configPath)
-if err == nil {
-t.Error("Expected error for invalid JSON")
-}
+	_, err := LoadConfig(configPath)
+	if err == nil {
+		t.Error("Expected error for invalid JSON")
+	}
 }
 
 func TestLoadConfigFromEnv_AllVars(t *testing.T) {
-// Save and restore env
-vars := []string{
-"SIL_DATABASE_URL",
-"SIL_MIGRATIONS_DIR",
-"SIL_SEEDERS_DIR",
-"SIL_TABLE_NAME",
-"SIL_SEEDS_TABLE_NAME",
-"SIL_ENVIRONMENT",
-"SIL_VERBOSE",
-"SIL_LOCK_TIMEOUT",
-"SIL_MIGRATION_TIMEOUT",
-}
+	// Save and restore env
+	vars := []string{
+		"SIL_DATABASE_URL",
+		"SIL_MIGRATIONS_DIR",
+		"SIL_SEEDERS_DIR",
+		"SIL_TABLE_NAME",
+		"SIL_SEEDS_TABLE_NAME",
+		"SIL_ENVIRONMENT",
+		"SIL_VERBOSE",
+		"SIL_LOCK_TIMEOUT",
+		"SIL_MIGRATION_TIMEOUT",
+	}
 
-oldVals := make(map[string]string)
-for _, v := range vars {
-oldVals[v] = os.Getenv(v)
-}
-defer func() {
-for _, v := range vars {
-os.Setenv(v, oldVals[v])
-}
-}()
+	oldVals := make(map[string]string)
+	for _, v := range vars {
+		oldVals[v] = os.Getenv(v)
+	}
+	defer func() {
+		for _, v := range vars {
+			os.Setenv(v, oldVals[v])
+		}
+	}()
 
-// Set all env vars
-os.Setenv("SIL_DATABASE_URL", "postgres://env/test")
-os.Setenv("SIL_MIGRATIONS_DIR", "./env_migrations")
-os.Setenv("SIL_SEEDERS_DIR", "./env_seeders")
-os.Setenv("SIL_TABLE_NAME", "env_migrations")
-os.Setenv("SIL_SEEDS_TABLE_NAME", "env_seeds")
-os.Setenv("SIL_ENVIRONMENT", "production")
-os.Setenv("SIL_VERBOSE", "true")
-os.Setenv("SIL_LOCK_TIMEOUT", "10m")
-os.Setenv("SIL_MIGRATION_TIMEOUT", "1h")
+	// Set all env vars
+	os.Setenv("SIL_DATABASE_URL", "postgres://env/test")
+	os.Setenv("SIL_MIGRATIONS_DIR", "./env_migrations")
+	os.Setenv("SIL_SEEDERS_DIR", "./env_seeders")
+	os.Setenv("SIL_TABLE_NAME", "env_migrations")
+	os.Setenv("SIL_SEEDS_TABLE_NAME", "env_seeds")
+	os.Setenv("SIL_ENVIRONMENT", "production")
+	os.Setenv("SIL_VERBOSE", "true")
+	os.Setenv("SIL_LOCK_TIMEOUT", "10m")
+	os.Setenv("SIL_MIGRATION_TIMEOUT", "1h")
 
-config := LoadConfigFromEnv(DefaultConfig())
+	config := LoadConfigFromEnv(DefaultConfig())
 
-if config.DatabaseURL != "postgres://env/test" {
-t.Errorf("Expected DatabaseURL from env")
-}
+	if config.DatabaseURL != "postgres://env/test" {
+		t.Errorf("Expected DatabaseURL from env")
+	}
 
-if config.MigrationsDir != "./env_migrations" {
-t.Errorf("Expected MigrationsDir from env")
-}
+	if config.MigrationsDir != "./env_migrations" {
+		t.Errorf("Expected MigrationsDir from env")
+	}
 
-if config.Environment != "production" {
-t.Errorf("Expected Environment from env")
-}
+	if config.Environment != "production" {
+		t.Errorf("Expected Environment from env")
+	}
 
-if !config.Verbose {
-t.Errorf("Expected Verbose to be true")
-}
+	if !config.Verbose {
+		t.Errorf("Expected Verbose to be true")
+	}
 
-if config.LockTimeout != 10*time.Minute {
-t.Errorf("Expected LockTimeout 10m, got %v", config.LockTimeout)
-}
+	if config.LockTimeout != 10*time.Minute {
+		t.Errorf("Expected LockTimeout 10m, got %v", config.LockTimeout)
+	}
 }
 
 func TestSaveConfig_CreateDirectory(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "subdir", "config.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "subdir", "config.yaml")
 
-config := DefaultConfig()
-config.DatabaseURL = "postgres://localhost/savetest"
+	config := DefaultConfig()
+	config.DatabaseURL = "postgres://localhost/savetest"
 
-err := SaveConfig(config, configPath)
-if err != nil {
-t.Fatalf("SaveConfig() error = %v", err)
-}
+	err := SaveConfig(config, configPath)
+	if err != nil {
+		t.Fatalf("SaveConfig() error = %v", err)
+	}
 
-// Verify file exists
-if _, err := os.Stat(configPath); os.IsNotExist(err) {
-t.Error("Expected config file to be created")
-}
+	// Verify file exists
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		t.Error("Expected config file to be created")
+	}
 
-// Verify can be loaded back
-loaded, err := LoadConfig(configPath)
-if err != nil {
-t.Fatalf("Failed to load saved config: %v", err)
-}
+	// Verify can be loaded back
+	loaded, err := LoadConfig(configPath)
+	if err != nil {
+		t.Fatalf("Failed to load saved config: %v", err)
+	}
 
-if loaded.DatabaseURL != config.DatabaseURL {
-t.Errorf("Expected saved and loaded configs to match")
-}
+	if loaded.DatabaseURL != config.DatabaseURL {
+		t.Errorf("Expected saved and loaded configs to match")
+	}
 }
 
 func TestLoadConfigFromEnv_InvalidDurations(t *testing.T) {
-oldTimeout := os.Getenv("SIL_LOCK_TIMEOUT")
-defer os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout)
+	oldTimeout := os.Getenv("SIL_LOCK_TIMEOUT")
+	defer os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout)
 
-os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
+	os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
 
-config := LoadConfigFromEnv(DefaultConfig())
+	config := LoadConfigFromEnv(DefaultConfig())
 
-// Should fall back to default
-if config.LockTimeout != 5*time.Minute {
-t.Errorf("Expected default lock timeout on invalid duration")
-}
+	// Should fall back to default
+	if config.LockTimeout != 5*time.Minute {
+		t.Errorf("Expected default lock timeout on invalid duration")
+	}
 }
 
 func TestLoadConfigWithDefaults_MergesBehavior(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "partial.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "partial.yaml")
 
-// Write partial config
-if err := os.WriteFile(configPath, []byte("database_url: postgres://localhost/partial"), 0644); err != nil {
-t.Fatalf("Failed to write config: %v", err)
-}
+	// Write partial config
+	if err := os.WriteFile(configPath, []byte("database_url: postgres://localhost/partial"), 0644); err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
-config, err := LoadConfigWithDefaults(configPath)
-if err != nil {
-t.Fatalf("LoadConfigWithDefaults() error = %v", err)
-}
+	config, err := LoadConfigWithDefaults(configPath)
+	if err != nil {
+		t.Fatalf("LoadConfigWithDefaults() error = %v", err)
+	}
 
-// Should have loaded value
-if config.DatabaseURL != "postgres://localhost/partial" {
-t.Error("Expected database_url to be loaded")
-}
+	// Should have loaded value
+	if config.DatabaseURL != "postgres://localhost/partial" {
+		t.Error("Expected database_url to be loaded")
+	}
 
-// Should have defaults for unspecified values
-if config.TableName != "sil_migrations" {
-t.Errorf("Expected default table_name")
-}
+	// Should have defaults for unspecified values
+	if config.TableName != "sil_migrations" {
+		t.Errorf("Expected default table_name")
+	}
 }
 
 func TestInitConfig_FileExists(t *testing.T) {
-tmpDir := t.TempDir()
-configPath := filepath.Join(tmpDir, "exists.yaml")
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "exists.yaml")
 
-// Create file first
-if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
-t.Fatalf("Failed to create file: %v", err)
-}
+	// Create file first
+	if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
+		t.Fatalf("Failed to create file: %v", err)
+	}
 
-// InitConfig should handle existing file
-err := InitConfig(configPath)
-// Implementation may overwrite or error - just ensure it doesn't crash
-_ = err
+	// InitConfig should handle existing file
+	err := InitConfig(configPath)
+	// Implementation may overwrite or error - just ensure it doesn't crash
+	_ = err
 }
 
 func TestLoadConfigWithDefaultsFile(t *testing.T) {
-// Create a temp config file
-tmpfile, err := os.CreateTemp("", "sil-*.yaml")
-if err != nil {
-t.Fatal(err)
-}
-defer os.Remove(tmpfile.Name())
+	// Create a temp config file
+	tmpfile, err := os.CreateTemp("", "sil-*.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name())
 
-content := `
+	content := `
 database_url: postgres://localhost/testdb
 migrations_dir: ./custom-migrations
 verbose: true
 `
-if _, err := tmpfile.Write([]byte(content)); err != nil {
-t.Fatal(err)
-}
-tmpfile.Close()
+	if _, err := tmpfile.Write([]byte(content)); err != nil {
+		t.Fatal(err)
+	}
+	tmpfile.Close()
 
-config, err := LoadConfigWithDefaults(tmpfile.Name())
-if err != nil {
-t.Fatalf("LoadConfigWithDefaults failed: %v", err)
-}
+	config, err := LoadConfigWithDefaults(tmpfile.Name())
+	if err != nil {
+		t.Fatalf("LoadConfigWithDefaults failed: %v", err)
+	}
 
-if config.DatabaseURL != "postgres://localhost/testdb" {
-t.Errorf("Expected custom database URL, got %s", config.DatabaseURL)
-}
+	if config.DatabaseURL != "postgres://localhost/testdb" {
+		t.Errorf("Expected custom database URL, got %s", config.DatabaseURL)
+	}
 
-if config.MigrationsDir != "./custom-migrations" {
-t.Errorf("Expected custom migrations dir, got %s", config.MigrationsDir)
-}
+	if config.MigrationsDir != "./custom-migrations" {
+		t.Errorf("Expected custom migrations dir, got %s", config.MigrationsDir)
+	}
 
-if !config.Verbose {
-t.Error("Expected verbose to be true")
-}
+	if !config.Verbose {
+		t.Error("Expected verbose to be true")
+	}
 }
 
 func TestLoadConfigFromEnvWithValues(t *testing.T) {
-// Set env vars
-os.Setenv("SIL_DATABASE_URL", "postgres://envhost/envdb")
-os.Setenv("SIL_MIGRATIONS_DIR", "./env-migrations")
-os.Setenv("SIL_VERBOSE", "true")
-os.Setenv("SIL_ENVIRONMENT", "production")
+	// Set env vars
+	os.Setenv("SIL_DATABASE_URL", "postgres://envhost/envdb")
+	os.Setenv("SIL_MIGRATIONS_DIR", "./env-migrations")
+	os.Setenv("SIL_VERBOSE", "true")
+	os.Setenv("SIL_ENVIRONMENT", "production")
 
-defer func() {
-os.Unsetenv("SIL_DATABASE_URL")
-os.Unsetenv("SIL_MIGRATIONS_DIR")
-os.Unsetenv("SIL_VERBOSE")
-os.Unsetenv("SIL_ENVIRONMENT")
-}()
+	defer func() {
+		os.Unsetenv("SIL_DATABASE_URL")
+		os.Unsetenv("SIL_MIGRATIONS_DIR")
+		os.Unsetenv("SIL_VERBOSE")
+		os.Unsetenv("SIL_ENVIRONMENT")
+	}()
 
-config := LoadConfigFromEnv(DefaultConfig())
+	config := LoadConfigFromEnv(DefaultConfig())
 
-if config.DatabaseURL != "postgres://envhost/envdb" {
-t.Errorf("Expected env database URL, got %s", config.DatabaseURL)
-}
+	if config.DatabaseURL != "postgres://envhost/envdb" {
+		t.Errorf("Expected env database URL, got %s", config.DatabaseURL)
+	}
 
-if config.MigrationsDir != "./env-migrations" {
-t.Errorf("Expected env migrations dir, got %s", config.MigrationsDir)
-}
+	if config.MigrationsDir != "./env-migrations" {
+		t.Errorf("Expected env migrations dir, got %s", config.MigrationsDir)
+	}
 
-if !config.Verbose {
-t.Error("Expected verbose to be true from env")
-}
+	if !config.Verbose {
+		t.Error("Expected verbose to be true from env")
+	}
 
-if config.Environment != "production" {
-t.Errorf("Expected production environment, got %s", config.Environment)
-}
+	if config.Environment != "production" {
+		t.Errorf("Expected production environment, got %s", config.Environment)
+	}
 }

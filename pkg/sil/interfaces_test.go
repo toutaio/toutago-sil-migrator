@@ -3,7 +3,7 @@ package sil
 import (
 	"errors"
 	"testing"
-	
+
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
@@ -173,7 +173,7 @@ func TestRowsAdapter_Error(t *testing.T) {
 
 	// Try to get the row which has an error
 	adapter.Next()
-	
+
 	// Err() might return the error
 	err = adapter.Err()
 	if err == nil {

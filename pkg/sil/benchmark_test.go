@@ -13,7 +13,7 @@ func BenchmarkMigrationRegistration(b *testing.B) {
 		b.StopTimer()
 		ClearRegisteredMigrations()
 		b.StartTimer()
-		
+
 		version := GenerateVersion()
 		m := NewBaseMigration(version, "benchmark", nil, nil)
 		RegisterMigration(m)

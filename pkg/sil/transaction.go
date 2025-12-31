@@ -7,12 +7,18 @@ import (
 )
 
 // transaction implements the Transaction interface.
+// This type and its methods are part of the public Transaction API,
+// though currently used internally only via the interface.
+//
+//nolint:unused // Part of public Transaction API
 type transaction struct {
 	tx     *sql.Tx
 	logger Logger
 }
 
 // newTransaction creates a new transaction wrapper.
+//
+//nolint:unused // Part of public Transaction API
 func newTransaction(tx *sql.Tx, logger Logger) Transaction {
 	if logger == nil {
 		logger = NewNoopLogger()

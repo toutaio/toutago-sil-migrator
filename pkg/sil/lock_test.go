@@ -62,7 +62,7 @@ func TestLock_DoubleRelease(t *testing.T) {
 	}
 
 	lock := newLock(releaseFunc, NewDefaultLogger(false))
-	
+
 	err := lock.Release()
 	if err != nil {
 		t.Errorf("first Release() error = %v", err)

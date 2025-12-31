@@ -215,7 +215,7 @@ func TestAdapterInterfaceCompliance(t *testing.T) {
 
 	// Test that adapter has expected methods (compile-time check)
 	ctx := context.Background()
-	
+
 	// These should not panic
 	_ = adapter.Close()
 	_ = adapter.Exec(ctx, "")
@@ -227,11 +227,9 @@ func TestAdapterInterfaceCompliance(t *testing.T) {
 func TestMySQLAdapterCreation(t *testing.T) {
 	// Test the adapter creation
 	adapter := &MySQLAdapter{}
-	
-	// We can verify the adapter structure is sound
-	if adapter == nil {
-		t.Error("MySQLAdapter should not be nil")
-	}
+
+	// Verify the adapter structure is initialized
+	_ = adapter // adapter is intentionally not nil after struct literal creation
 }
 
 // Test SQLite path extraction
@@ -284,7 +282,7 @@ func TestConnectionStringValidation(t *testing.T) {
 			}
 
 			_, err := NewAdapter(config)
-			
+
 			hasErr := err != nil
 			if hasErr != tt.wantErr {
 				t.Errorf("NewAdapter() error = %v, wantErr %v", err, tt.wantErr)

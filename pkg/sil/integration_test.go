@@ -462,207 +462,207 @@ func (m *testMigration) Down(adapter sil.DatabaseAdapter) error {
 
 // TestIntegrationTransactionCommit tests transaction commit path.
 func TestIntegrationTransactionCommit(t *testing.T) {
-if testing.Short() {
-t.Skip("Skipping integration test in short mode")
-}
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 
-config := IntegrationTestConfig()
-if !isDatabaseAvailable(config.DatabaseURL) {
-t.Skip("PostgreSQL database not available")
-}
+	config := IntegrationTestConfig()
+	if !isDatabaseAvailable(config.DatabaseURL) {
+		t.Skip("PostgreSQL database not available")
+	}
 
-cleanupDatabase(t, config)
+	cleanupDatabase(t, config)
 
-adapter, err := adapters.NewPostgresAdapter(config)
-if err != nil {
-t.Fatalf("Failed to create adapter: %v", err)
-}
+	adapter, err := adapters.NewPostgresAdapter(config)
+	if err != nil {
+		t.Fatalf("Failed to create adapter: %v", err)
+	}
 
-ctx := context.Background()
-if err := adapter.Connect(ctx, config); err != nil {
-t.Fatalf("Failed to connect: %v", err)
-}
-defer adapter.Close()
+	ctx := context.Background()
+	if err := adapter.Connect(ctx, config); err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer adapter.Close()
 
-if err := adapter.CreateMigrationsTable(ctx); err != nil {
-t.Fatalf("Failed to create migrations table: %v", err)
-}
+	if err := adapter.CreateMigrationsTable(ctx); err != nil {
+		t.Fatalf("Failed to create migrations table: %v", err)
+	}
 
-// Begin transaction
-tx, err := adapter.BeginTx(ctx)
-if err != nil {
-t.Fatalf("Failed to begin transaction: %v", err)
-}
+	// Begin transaction
+	tx, err := adapter.BeginTx(ctx)
+	if err != nil {
+		t.Fatalf("Failed to begin transaction: %v", err)
+	}
 
-// Execute within transaction
-if err := tx.Exec(ctx, "INSERT INTO "+config.TableName+" (version, description, batch) VALUES ($1, $2, $3)", "20240101000000", "test", 1); err != nil {
-t.Fatalf("Failed to execute in transaction: %v", err)
-}
+	// Execute within transaction
+	if err := tx.Exec(ctx, "INSERT INTO "+config.TableName+" (version, description, batch) VALUES ($1, $2, $3)", "20240101000000", "test", 1); err != nil {
+		t.Fatalf("Failed to execute in transaction: %v", err)
+	}
 
-// Commit transaction
-if err := tx.Commit(); err != nil {
-t.Fatalf("Failed to commit transaction: %v", err)
-}
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		t.Fatalf("Failed to commit transaction: %v", err)
+	}
 
-// Verify data was committed
-applied, err := adapter.GetAppliedMigrations(ctx)
-if err != nil {
-t.Fatalf("Failed to get applied migrations: %v", err)
-}
+	// Verify data was committed
+	applied, err := adapter.GetAppliedMigrations(ctx)
+	if err != nil {
+		t.Fatalf("Failed to get applied migrations: %v", err)
+	}
 
-if len(applied) != 1 {
-t.Errorf("Expected 1 applied migration, got %d", len(applied))
-}
+	if len(applied) != 1 {
+		t.Errorf("Expected 1 applied migration, got %d", len(applied))
+	}
 }
 
 // TestIntegrationTransactionRollbackOnError tests automatic rollback on error.
 func TestIntegrationTransactionRollbackOnError(t *testing.T) {
-if testing.Short() {
-t.Skip("Skipping integration test in short mode")
-}
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 
-config := IntegrationTestConfig()
-if !isDatabaseAvailable(config.DatabaseURL) {
-t.Skip("PostgreSQL database not available")
-}
+	config := IntegrationTestConfig()
+	if !isDatabaseAvailable(config.DatabaseURL) {
+		t.Skip("PostgreSQL database not available")
+	}
 
-cleanupDatabase(t, config)
+	cleanupDatabase(t, config)
 
-adapter, err := adapters.NewPostgresAdapter(config)
-if err != nil {
-t.Fatalf("Failed to create adapter: %v", err)
-}
+	adapter, err := adapters.NewPostgresAdapter(config)
+	if err != nil {
+		t.Fatalf("Failed to create adapter: %v", err)
+	}
 
-ctx := context.Background()
-if err := adapter.Connect(ctx, config); err != nil {
-t.Fatalf("Failed to connect: %v", err)
-}
-defer adapter.Close()
+	ctx := context.Background()
+	if err := adapter.Connect(ctx, config); err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer adapter.Close()
 
-if err := adapter.CreateMigrationsTable(ctx); err != nil {
-t.Fatalf("Failed to create migrations table: %v", err)
-}
+	if err := adapter.CreateMigrationsTable(ctx); err != nil {
+		t.Fatalf("Failed to create migrations table: %v", err)
+	}
 
-// Begin transaction
-tx, err := adapter.BeginTx(ctx)
-if err != nil {
-t.Fatalf("Failed to begin transaction: %v", err)
-}
+	// Begin transaction
+	tx, err := adapter.BeginTx(ctx)
+	if err != nil {
+		t.Fatalf("Failed to begin transaction: %v", err)
+	}
 
-// Execute within transaction
-if err := tx.Exec(ctx, "INSERT INTO "+config.TableName+" (version, description, batch) VALUES ($1, $2, $3)", "20240101000000", "test", 1); err != nil {
-t.Fatalf("Failed to execute in transaction: %v", err)
-}
+	// Execute within transaction
+	if err := tx.Exec(ctx, "INSERT INTO "+config.TableName+" (version, description, batch) VALUES ($1, $2, $3)", "20240101000000", "test", 1); err != nil {
+		t.Fatalf("Failed to execute in transaction: %v", err)
+	}
 
-// Rollback transaction
-if err := tx.Rollback(); err != nil {
-t.Fatalf("Failed to rollback transaction: %v", err)
-}
+	// Rollback transaction
+	if err := tx.Rollback(); err != nil {
+		t.Fatalf("Failed to rollback transaction: %v", err)
+	}
 
-// Verify data was rolled back
-applied, err := adapter.GetAppliedMigrations(ctx)
-if err != nil {
-t.Fatalf("Failed to get applied migrations: %v", err)
-}
+	// Verify data was rolled back
+	applied, err := adapter.GetAppliedMigrations(ctx)
+	if err != nil {
+		t.Fatalf("Failed to get applied migrations: %v", err)
+	}
 
-if len(applied) != 0 {
-t.Errorf("Expected 0 applied migrations after rollback, got %d", len(applied))
-}
+	if len(applied) != 0 {
+		t.Errorf("Expected 0 applied migrations after rollback, got %d", len(applied))
+	}
 }
 
 // TestIntegrationLockAcquisition tests lock acquisition and release.
 func TestIntegrationLockAcquisition(t *testing.T) {
-if testing.Short() {
-t.Skip("Skipping integration test in short mode")
-}
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 
-config := IntegrationTestConfig()
-if !isDatabaseAvailable(config.DatabaseURL) {
-t.Skip("PostgreSQL database not available")
-}
+	config := IntegrationTestConfig()
+	if !isDatabaseAvailable(config.DatabaseURL) {
+		t.Skip("PostgreSQL database not available")
+	}
 
-adapter, err := adapters.NewPostgresAdapter(config)
-if err != nil {
-t.Fatalf("Failed to create adapter: %v", err)
-}
+	adapter, err := adapters.NewPostgresAdapter(config)
+	if err != nil {
+		t.Fatalf("Failed to create adapter: %v", err)
+	}
 
-ctx := context.Background()
-if err := adapter.Connect(ctx, config); err != nil {
-t.Fatalf("Failed to connect: %v", err)
-}
-defer adapter.Close()
+	ctx := context.Background()
+	if err := adapter.Connect(ctx, config); err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer adapter.Close()
 
-// Acquire lock
-lock, err := adapter.Lock(ctx)
-if err != nil {
-t.Fatalf("Failed to acquire lock: %v", err)
-}
+	// Acquire lock
+	lock, err := adapter.Lock(ctx)
+	if err != nil {
+		t.Fatalf("Failed to acquire lock: %v", err)
+	}
 
-// Verify lock is held
-if !lock.IsLocked() {
-t.Error("Expected lock to be held")
-}
+	// Verify lock is held
+	if !lock.IsLocked() {
+		t.Error("Expected lock to be held")
+	}
 
-// Release lock
-if err := lock.Release(); err != nil {
-t.Fatalf("Failed to release lock: %v", err)
-}
+	// Release lock
+	if err := lock.Release(); err != nil {
+		t.Fatalf("Failed to release lock: %v", err)
+	}
 
-// Verify lock is released
-if lock.IsLocked() {
-t.Error("Expected lock to be released")
-}
+	// Verify lock is released
+	if lock.IsLocked() {
+		t.Error("Expected lock to be released")
+	}
 }
 
 // TestIntegrationTransactionQuery tests query within transaction.
 func TestIntegrationTransactionQuery(t *testing.T) {
-if testing.Short() {
-t.Skip("Skipping integration test in short mode")
-}
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
 
-config := IntegrationTestConfig()
-if !isDatabaseAvailable(config.DatabaseURL) {
-t.Skip("PostgreSQL database not available")
-}
+	config := IntegrationTestConfig()
+	if !isDatabaseAvailable(config.DatabaseURL) {
+		t.Skip("PostgreSQL database not available")
+	}
 
-cleanupDatabase(t, config)
+	cleanupDatabase(t, config)
 
-adapter, err := adapters.NewPostgresAdapter(config)
-if err != nil {
-t.Fatalf("Failed to create adapter: %v", err)
-}
+	adapter, err := adapters.NewPostgresAdapter(config)
+	if err != nil {
+		t.Fatalf("Failed to create adapter: %v", err)
+	}
 
-ctx := context.Background()
-if err := adapter.Connect(ctx, config); err != nil {
-t.Fatalf("Failed to connect: %v", err)
-}
-defer adapter.Close()
+	ctx := context.Background()
+	if err := adapter.Connect(ctx, config); err != nil {
+		t.Fatalf("Failed to connect: %v", err)
+	}
+	defer adapter.Close()
 
-if err := adapter.CreateMigrationsTable(ctx); err != nil {
-t.Fatalf("Failed to create migrations table: %v", err)
-}
+	if err := adapter.CreateMigrationsTable(ctx); err != nil {
+		t.Fatalf("Failed to create migrations table: %v", err)
+	}
 
-// Begin transaction
-tx, err := adapter.BeginTx(ctx)
-if err != nil {
-t.Fatalf("Failed to begin transaction: %v", err)
-}
-defer tx.Rollback()
+	// Begin transaction
+	tx, err := adapter.BeginTx(ctx)
+	if err != nil {
+		t.Fatalf("Failed to begin transaction: %v", err)
+	}
+	defer tx.Rollback()
 
-// Query within transaction
-rows, err := tx.Query(ctx, "SELECT version FROM "+config.TableName)
-if err != nil {
-t.Fatalf("Failed to query in transaction: %v", err)
-}
-defer rows.Close()
+	// Query within transaction
+	rows, err := tx.Query(ctx, "SELECT version FROM "+config.TableName)
+	if err != nil {
+		t.Fatalf("Failed to query in transaction: %v", err)
+	}
+	defer rows.Close()
 
-// Count rows
-count := 0
-for rows.Next() {
-count++
-}
+	// Count rows
+	count := 0
+	for rows.Next() {
+		count++
+	}
 
-if count != 0 {
-t.Errorf("Expected 0 rows, got %d", count)
-}
+	if count != 0 {
+		t.Errorf("Expected 0 rows, got %d", count)
+	}
 }

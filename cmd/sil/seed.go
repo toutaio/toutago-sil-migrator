@@ -37,10 +37,10 @@ var (
 	}
 
 	// Seed flags
-	seedAll   bool
-	seedForce bool
+	seedAll    bool
+	seedForce  bool
 	seedDryRun bool
-	seedEnv   string
+	seedEnv    string
 )
 
 func init() {
@@ -106,7 +106,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 
 func runSeedDryRun(manager sil.SeedManager, seeders []string) error {
 	ctx := context.Background()
-	
+
 	fmt.Println("\n🔍 Dry Run Mode - No changes will be made")
 
 	statuses, err := manager.Status(ctx)
@@ -132,7 +132,7 @@ func runSeedDryRun(manager sil.SeedManager, seeders []string) error {
 	for i, status := range statuses {
 		icon := "✓"
 		reason := ""
-		
+
 		if status.Executed && !seedForce {
 			icon = "⊘"
 			reason = " (already executed)"
@@ -290,7 +290,7 @@ func runSeedStatus(cmd *cobra.Command, args []string) error {
 			statusText = "Skipped"
 		}
 
-		fmt.Printf("%-30s  %s %-10s  %s\n", 
+		fmt.Printf("%-30s  %s %-10s  %s\n",
 			truncate(status.Name, 30),
 			statusIcon,
 			statusText,
@@ -307,15 +307,14 @@ func loadSeeders(dir string) error {
 	// 1. Discover .go files in the seeders directory
 	// 2. Use go/build to compile them
 	// 3. Load them dynamically
-	// 
+	//
 	// For now, seeders must be registered in the application code
 	// using sil.RegisterSeeder() in an init() function
-	
+
 	// This is a placeholder - in practice, seeders are registered
 	// when the application is built
 	return nil
 }
-
 
 // Seeder template
 const seederTemplate = `package seeders
