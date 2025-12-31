@@ -114,7 +114,7 @@ func TestDiscoverMigrationFiles(t *testing.T) {
 
 	for _, file := range files {
 		path := filepath.Join(tmpDir, file)
-		if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
+		if err := os.WriteFile(path, []byte("package migrations"), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 	}
@@ -150,7 +150,7 @@ func TestValidateMigrationFiles(t *testing.T) {
 
 	for filename, content := range files {
 		path := filepath.Join(tmpDir, filename)
-		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 			t.Fatalf("Failed to create test file: %v", err)
 		}
 	}
@@ -167,7 +167,7 @@ func TestValidateMigrationFiles_Invalid(t *testing.T) {
 
 	// Create invalid file
 	invalidFile := filepath.Join(tmpDir, "invalid_name.go")
-	if err := os.WriteFile(invalidFile, []byte("package migrations"), 0644); err != nil {
+	if err := os.WriteFile(invalidFile, []byte("package migrations"), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -184,7 +184,7 @@ func TestCheckForOrphanedFiles(t *testing.T) {
 	// Create migration file
 	filename := "20240101000000_create_users.go"
 	path := filepath.Join(tmpDir, filename)
-	if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
+	if err := os.WriteFile(path, []byte("package migrations"), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -209,7 +209,7 @@ func TestCheckForOrphanedFiles_NoOrphans(t *testing.T) {
 	// Create migration file
 	filename := "20240101000000_create_users.go"
 	path := filepath.Join(tmpDir, filename)
-	if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
+	if err := os.WriteFile(path, []byte("package migrations"), 0o600); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
 
@@ -261,7 +261,7 @@ func TestLoader_GetMigrationPath(t *testing.T) {
 	// Create migration file
 	filename := "20240101000000_create_users.go"
 	path := filepath.Join(tmpDir, filename)
-	if err := os.WriteFile(path, []byte("package migrations"), 0644); err != nil {
+	if err := os.WriteFile(path, []byte("package migrations"), 0o600); err != nil {
 		t.Fatalf("Failed to create file: %v", err)
 	}
 
@@ -354,9 +354,8 @@ func TestGenerateMigrationFileName_Consistency(t *testing.T) {
 	filename2 := GenerateMigrationFileName(desc)
 
 	// Should generate different filenames due to timestamp
-	if filename1 == filename2 {
-		// This might happen if called in same microsecond, which is fine
-	}
+	// (might be same if called in same microsecond, which is fine)
+	_ = filename1 == filename2
 
 	// Both should be valid
 	_, _, err1 := ParseMigrationFileName(filename1)

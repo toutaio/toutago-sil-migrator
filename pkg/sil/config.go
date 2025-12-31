@@ -24,7 +24,7 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	// Read file
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) //#nosec G304 -- Path is from config file
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -240,12 +240,12 @@ func SaveConfig(config *Config, path string) error {
 
 	// Create directory if it doesn't exist
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
 
 	// Write file
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := os.WriteFile(path, data, 0o600); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 

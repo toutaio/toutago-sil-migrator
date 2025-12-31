@@ -27,7 +27,7 @@ func TestGenerator_Generate(t *testing.T) {
 	}
 
 	// Check file content
-	content, err := os.ReadFile(filename)
+	content, err := os.ReadFile(filename) //#nosec G304 -- Filename is from test setup
 	if err != nil {
 		t.Fatalf("Failed to read generated file: %v", err)
 	}
@@ -53,7 +53,7 @@ func TestGenerator_GenerateCreateTable(t *testing.T) {
 	}
 
 	// Check file content
-	content, err := os.ReadFile(filename)
+	content, err := os.ReadFile(filename) //#nosec G304 -- Filename is from test setup
 	if err != nil {
 		t.Fatalf("Failed to read generated file: %v", err)
 	}
@@ -133,15 +133,13 @@ func TestGenerator_FileAlreadyExists(t *testing.T) {
 	}
 
 	// Try to write the same file again (simulate duplicate)
-	err = os.WriteFile(filename, []byte("duplicate"), 0644)
+	err = os.WriteFile(filename, []byte("duplicate"), 0o600)
 	if err != nil {
 		t.Fatalf("Failed to create duplicate file: %v", err)
 	}
 
 	// This should succeed but create different filename due to timestamp
-	_, err = generator.Generate("create users")
-	if err != nil {
-		// It's okay if it fails or succeeds - timing dependent
-		// Just ensure it doesn't panic
-	}
+	_, _ = generator.Generate("create users")
+	// It's okay if it fails or succeeds - timing dependent
+	// Just ensure it doesn't panic
 }

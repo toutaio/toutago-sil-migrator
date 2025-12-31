@@ -162,7 +162,7 @@ func runSeedCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create seeders directory if it doesn't exist
-	if err := os.MkdirAll(cfg.SeedersDir, 0755); err != nil {
+	if err := os.MkdirAll(cfg.SeedersDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create seeders directory: %w", err)
 	}
 
@@ -182,7 +182,7 @@ func runSeedCreate(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to parse template: %w", err)
 	}
 
-	file, err := os.Create(filepath)
+	file, err := os.Create(filepath) //#nosec G304 -- Path is generated internally
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
@@ -259,11 +259,12 @@ func runSeedStatus(cmd *cobra.Command, args []string) error {
 	pending := 0
 
 	for _, status := range statuses {
-		if status.Executed {
+		switch {
+		case status.Executed:
 			executed++
-		} else if status.Skipped {
+		case status.Skipped:
 			skipped++
-		} else {
+		default:
 			pending++
 		}
 	}

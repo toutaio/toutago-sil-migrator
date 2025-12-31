@@ -14,7 +14,7 @@ func TestLockErrorFormatting(t *testing.T) {
 	}
 
 	errStr := err.Error()
-	if len(errStr) == 0 {
+	if errStr == "" {
 		t.Error("Error string should not be empty")
 	}
 }
@@ -26,7 +26,7 @@ func TestSeederErrorFormatting(t *testing.T) {
 	}
 
 	errStr := err.Error()
-	if len(errStr) == 0 {
+	if errStr == "" {
 		t.Error("Error string should not be empty")
 	}
 }

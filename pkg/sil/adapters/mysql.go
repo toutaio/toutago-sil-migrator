@@ -106,6 +106,7 @@ func (a *MySQLAdapter) BeginTx(ctx context.Context) (sil.Transaction, error) {
 func (a *MySQLAdapter) CreateMigrationsTable(ctx context.Context) error {
 	a.logger.Debug("Creating migrations table if not exists")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
 			id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -124,6 +125,7 @@ func (a *MySQLAdapter) CreateMigrationsTable(ctx context.Context) error {
 func (a *MySQLAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.MigrationRecord, error) {
 	a.logger.Debug("Fetching applied migrations")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT id, version, description, batch, executed_at
 		FROM %s
@@ -152,6 +154,7 @@ func (a *MySQLAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migratio
 func (a *MySQLAdapter) RecordMigration(ctx context.Context, version, description string, batch int) error {
 	a.logger.Debug("Recording migration: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		INSERT INTO %s (version, description, batch)
 		VALUES (?, ?, ?)
@@ -164,6 +167,7 @@ func (a *MySQLAdapter) RecordMigration(ctx context.Context, version, description
 func (a *MySQLAdapter) RemoveMigration(ctx context.Context, version string) error {
 	a.logger.Debug("Removing migration record: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		DELETE FROM %s WHERE version = ?
 	`, a.config.TableName)
@@ -175,6 +179,7 @@ func (a *MySQLAdapter) RemoveMigration(ctx context.Context, version string) erro
 func (a *MySQLAdapter) GetLastBatch(ctx context.Context) (int, error) {
 	a.logger.Debug("Getting last batch number")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT COALESCE(MAX(batch), 0) FROM %s
 	`, a.config.TableName)
@@ -281,6 +286,7 @@ func (l *mysqlLock) IsLocked() bool {
 // hashString generates a consistent hash for a string.
 func hashString(s string) int64 {
 	h := fnv.New64a()
-	h.Write([]byte(s))
+	_, _ = h.Write([]byte(s)) // hash.Hash.Write never returns error
+	//#nosec G115 -- Conversion is intentional for database advisory lock ID
 	return int64(h.Sum64())
 }

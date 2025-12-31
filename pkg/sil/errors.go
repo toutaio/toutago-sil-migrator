@@ -143,7 +143,7 @@ func (e *ValidationError) Error() string {
 }
 
 // WrapMigrationError wraps an error with migration context.
-func WrapMigrationError(migration string, operation string, err error) error {
+func WrapMigrationError(migration, operation string, err error) error {
 	return &MigrationError{
 		Migration: migration,
 		Operation: operation,

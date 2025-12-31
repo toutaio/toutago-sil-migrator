@@ -135,6 +135,7 @@ func (a *PostgresAdapter) BeginTx(ctx context.Context) (sil.Transaction, error) 
 func (a *PostgresAdapter) CreateMigrationsTable(ctx context.Context) error {
 	a.logger.Debug("Creating migrations table if not exists")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
 			id SERIAL PRIMARY KEY,
@@ -152,6 +153,7 @@ func (a *PostgresAdapter) CreateMigrationsTable(ctx context.Context) error {
 func (a *PostgresAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.MigrationRecord, error) {
 	a.logger.Debug("Fetching applied migrations")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT id, version, description, batch, executed_at
 		FROM %s
@@ -184,6 +186,7 @@ func (a *PostgresAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migra
 func (a *PostgresAdapter) RecordMigration(ctx context.Context, version, description string, batch int) error {
 	a.logger.Debug("Recording migration: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		INSERT INTO %s (version, description, batch)
 		VALUES ($1, $2, $3)
@@ -196,6 +199,7 @@ func (a *PostgresAdapter) RecordMigration(ctx context.Context, version, descript
 func (a *PostgresAdapter) RemoveMigration(ctx context.Context, version string) error {
 	a.logger.Debug("Removing migration record: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		DELETE FROM %s WHERE version = $1
 	`, a.config.TableName)
@@ -256,6 +260,7 @@ func (a *PostgresAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 func (a *PostgresAdapter) GetLastBatch(ctx context.Context) (int, error) {
 	a.logger.Debug("Getting last batch number")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT COALESCE(MAX(batch), 0) FROM %s
 	`, a.config.TableName)
@@ -282,8 +287,9 @@ func (a *PostgresAdapter) getLockKey() int64 {
 
 	// Generate hash
 	h := fnv.New64a()
-	h.Write([]byte("sil_migration_lock_" + dbName))
+	_, _ = h.Write([]byte("sil_migration_lock_" + dbName)) // hash.Hash.Write never returns error
 
+	//#nosec G115 -- Conversion is intentional for database advisory lock ID
 	return int64(h.Sum64() & 0x7FFFFFFFFFFFFFFF) // Ensure positive
 }
 

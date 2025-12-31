@@ -219,7 +219,10 @@ func TestAdapterInterfaceCompliance(t *testing.T) {
 	// These should not panic
 	_ = adapter.Close()
 	_ = adapter.Exec(ctx, "")
-	_, _ = adapter.Query(ctx, "")
+	rows, _ := adapter.Query(ctx, "")
+	if rows != nil {
+		_ = rows.Close()
+	}
 	_, _ = adapter.BeginTx(ctx)
 }
 

@@ -53,13 +53,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create migrations directory
-	if err := os.MkdirAll(config.MigrationsDir, 0755); err != nil {
+	if err := os.MkdirAll(config.MigrationsDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create migrations directory: %w", err)
 	}
 	fmt.Printf("✓ Created directory: %s\n", config.MigrationsDir)
 
 	// Create seeders directory
-	if err := os.MkdirAll(config.SeedersDir, 0755); err != nil {
+	if err := os.MkdirAll(config.SeedersDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create seeders directory: %w", err)
 	}
 	fmt.Printf("✓ Created directory: %s\n", config.SeedersDir)
@@ -72,7 +72,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 
 	// Create a sample migration
 	sampleMigration := filepath.Join(config.MigrationsDir, ".gitkeep")
-	if err := os.WriteFile(sampleMigration, []byte(""), 0644); err != nil {
+	if err := os.WriteFile(sampleMigration, []byte(""), 0o600); err != nil {
 		return fmt.Errorf("failed to create .gitkeep: %w", err)
 	}
 

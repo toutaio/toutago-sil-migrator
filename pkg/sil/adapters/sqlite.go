@@ -57,7 +57,7 @@ func (a *SQLiteAdapter) Connect(ctx context.Context, config *sil.Config) error {
 	// Ensure directory exists
 	dir := filepath.Dir(a.dbPath)
 	if dir != "." && dir != "" {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0o750); err != nil {
 			return fmt.Errorf("failed to create database directory: %w", err)
 		}
 	}
@@ -133,6 +133,7 @@ func (a *SQLiteAdapter) BeginTx(ctx context.Context) (sil.Transaction, error) {
 func (a *SQLiteAdapter) CreateMigrationsTable(ctx context.Context) error {
 	a.logger.Debug("Creating migrations table if not exists")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -159,6 +160,7 @@ func (a *SQLiteAdapter) CreateMigrationsTable(ctx context.Context) error {
 func (a *SQLiteAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.MigrationRecord, error) {
 	a.logger.Debug("Fetching applied migrations")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT id, version, description, batch, executed_at
 		FROM %s
@@ -187,6 +189,7 @@ func (a *SQLiteAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migrati
 func (a *SQLiteAdapter) RecordMigration(ctx context.Context, version, description string, batch int) error {
 	a.logger.Debug("Recording migration: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		INSERT INTO %s (version, description, batch)
 		VALUES (?, ?, ?)
@@ -199,6 +202,7 @@ func (a *SQLiteAdapter) RecordMigration(ctx context.Context, version, descriptio
 func (a *SQLiteAdapter) RemoveMigration(ctx context.Context, version string) error {
 	a.logger.Debug("Removing migration record: %s", version)
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		DELETE FROM %s WHERE version = ?
 	`, a.config.TableName)
@@ -210,6 +214,7 @@ func (a *SQLiteAdapter) RemoveMigration(ctx context.Context, version string) err
 func (a *SQLiteAdapter) GetLastBatch(ctx context.Context) (int, error) {
 	a.logger.Debug("Getting last batch number")
 
+	//#nosec G201 -- Table name is from config file, not user input
 	query := fmt.Sprintf(`
 		SELECT COALESCE(MAX(batch), 0) FROM %s
 	`, a.config.TableName)
@@ -239,7 +244,7 @@ func (a *SQLiteAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 	}
 
 	// Create lock file
-	file, err := os.OpenFile(a.lockFile, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(a.lockFile, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
 	if err != nil {
 		if os.IsExist(err) {
 			return nil, sil.ErrLockAcquisitionFailed

@@ -38,10 +38,11 @@ jobs:
     - name: Run tests with race detector
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-          go test -v -race -timeout 10m ./...
+          CGO_ENABLED=1 go test -v -race -timeout 10m ./...
         else
           # Skip race detector on macOS/Windows due to CGO (SQLite) compatibility
-          go test -v -timeout 10m ./...
+          # But enable CGO for SQLite driver
+          CGO_ENABLED=1 go test -v -timeout 10m ./...
         fi
       shell: bash
 
@@ -60,7 +61,7 @@ jobs:
         go-version: '1.23.x'
         
     - name: Run tests with coverage
-      run: go test -coverprofile=coverage.out -covermode=atomic ./...
+      run: go test -coverprofile=coverage.out -covermode=atomic ./pkg/...
       
     - name: Generate coverage report
       run: |
@@ -70,12 +71,12 @@ jobs:
     - name: Check coverage threshold
       run: |
         COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
-        echo "Total coverage: ${COVERAGE}%"
-        if (( $(echo "$COVERAGE < 50.0" | bc -l) )); then
-          echo "❌ Coverage ${COVERAGE}% is below threshold of 50%"
+        echo "Library coverage (pkg/): ${COVERAGE}%"
+        if (( $(echo "$COVERAGE < 70.0" | bc -l) )); then
+          echo "❌ Coverage ${COVERAGE}% is below threshold of 70%"
           exit 1
         fi
-        echo "✅ Coverage ${COVERAGE}% meets threshold of 50%"
+        echo "✅ Coverage ${COVERAGE}% meets threshold of 70%"
       shell: bash
       
     - name: Upload coverage artifacts

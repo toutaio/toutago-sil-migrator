@@ -18,9 +18,8 @@ func WithTransaction(ctx context.Context, adapter DatabaseAdapter, fn func(tx Tr
 	needsRollback := true
 	defer func() {
 		if needsRollback {
-			if rbErr := tx.Rollback(); rbErr != nil {
-				// Log but don't return error from defer
-			}
+			_ = tx.Rollback() // Ignore rollback errors in defer
+			// Log but don't return error from defer
 		}
 	}()
 
@@ -50,9 +49,8 @@ func WithTransactionAndRecover(ctx context.Context, adapter DatabaseAdapter, fn 
 	needsRollback := true
 	defer func() {
 		if needsRollback {
-			if rbErr := tx.Rollback(); rbErr != nil {
-				// Log but don't return error from defer
-			}
+			_ = tx.Rollback() // Ignore rollback errors in defer
+			// Log but don't return error from defer
 		}
 	}()
 

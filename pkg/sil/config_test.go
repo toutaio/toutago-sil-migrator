@@ -303,7 +303,7 @@ func TestLoadConfigWithDefaults(t *testing.T) {
 
 	// Create minimal config file
 	configContent := `database_url: "postgres://localhost/test"`
-	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -331,7 +331,7 @@ func TestFindConfigFile(t *testing.T) {
 
 	// Create config in tmpDir
 	configPath := filepath.Join(tmpDir, "sil.yaml")
-	if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte("test"), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -383,7 +383,7 @@ func TestLoadConfigAuto(t *testing.T) {
 
 	// Create config file
 	configContent := `database_url: "postgres://localhost/autotest"`
-	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -475,7 +475,7 @@ table_name: "yaml_migrations"
 environment: "test"
 verbose: true
 `
-	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -507,7 +507,7 @@ func TestLoadConfig_JSON(t *testing.T) {
 "table_name": "json_migrations",
 "environment": "test"
 }`
-	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte(configContent), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -536,7 +536,7 @@ func TestLoadConfig_InvalidYAML(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "invalid.yaml")
 
-	if err := os.WriteFile(configPath, []byte("invalid: [yaml: content"), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte("invalid: [yaml: content"), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -550,7 +550,7 @@ func TestLoadConfig_InvalidJSON(t *testing.T) {
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "invalid.json")
 
-	if err := os.WriteFile(configPath, []byte("{invalid json"), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte("{invalid json"), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -665,7 +665,7 @@ func TestLoadConfigWithDefaults_MergesBehavior(t *testing.T) {
 	configPath := filepath.Join(tmpDir, "partial.yaml")
 
 	// Write partial config
-	if err := os.WriteFile(configPath, []byte("database_url: postgres://localhost/partial"), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte("database_url: postgres://localhost/partial"), 0o600); err != nil {
 		t.Fatalf("Failed to write config: %v", err)
 	}
 
@@ -690,7 +690,7 @@ func TestInitConfig_FileExists(t *testing.T) {
 	configPath := filepath.Join(tmpDir, "exists.yaml")
 
 	// Create file first
-	if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
+	if err := os.WriteFile(configPath, []byte("test"), 0o600); err != nil {
 		t.Fatalf("Failed to create file: %v", err)
 	}
 
@@ -713,7 +713,7 @@ database_url: postgres://localhost/testdb
 migrations_dir: ./custom-migrations
 verbose: true
 `
-	if _, err := tmpfile.Write([]byte(content)); err != nil {
+	if _, err := tmpfile.WriteString(content); err != nil {
 		t.Fatal(err)
 	}
 	_ = tmpfile.Close()

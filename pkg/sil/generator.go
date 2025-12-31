@@ -41,7 +41,7 @@ func (g *Generator) Generate(description string) (string, error) {
 	}
 
 	// Ensure migrations directory exists
-	if err := os.MkdirAll(g.migrationsDir, 0755); err != nil {
+	if err := os.MkdirAll(g.migrationsDir, 0o750); err != nil {
 		return "", fmt.Errorf("failed to create migrations directory: %w", err)
 	}
 
@@ -84,7 +84,7 @@ func (g *Generator) GenerateCreateTable(tableName string) (string, error) {
 	fullPath := filepath.Join(g.migrationsDir, filename)
 
 	// Ensure migrations directory exists
-	if err := os.MkdirAll(g.migrationsDir, 0755); err != nil {
+	if err := os.MkdirAll(g.migrationsDir, 0o750); err != nil {
 		return "", fmt.Errorf("failed to create migrations directory: %w", err)
 	}
 
@@ -116,7 +116,7 @@ func (g *Generator) GenerateAddColumn(tableName, columnName string) (string, err
 	fullPath := filepath.Join(g.migrationsDir, filename)
 
 	// Ensure migrations directory exists
-	if err := os.MkdirAll(g.migrationsDir, 0755); err != nil {
+	if err := os.MkdirAll(g.migrationsDir, 0o750); err != nil {
 		return "", fmt.Errorf("failed to create migrations directory: %w", err)
 	}
 
@@ -137,13 +137,13 @@ func (g *Generator) GenerateAddColumn(tableName, columnName string) (string, err
 }
 
 // generateFromTemplate generates a file from a template.
-func (g *Generator) generateFromTemplate(path string, tmpl string, data interface{}) error {
+func (g *Generator) generateFromTemplate(path, tmpl string, data interface{}) error {
 	t, err := template.New("migration").Parse(tmpl)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)
 	}
 
-	file, err := os.Create(path)
+	file, err := os.Create(path) //#nosec G304 -- Path is generated internally
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
@@ -165,7 +165,7 @@ func generateStructName(version, description string) string {
 	// Title case each word
 	parts := strings.Split(description, "_")
 	for i, part := range parts {
-		if len(part) > 0 {
+		if part != "" {
 			parts[i] = strings.ToUpper(part[:1]) + part[1:]
 		}
 	}

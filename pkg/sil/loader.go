@@ -137,7 +137,7 @@ func (l *Loader) DiscoverMigrationFiles() ([]string, error) {
 
 // ParseMigrationFileName parses a migration file name and extracts version and description.
 // Expected format: YYYYMMDDHHMMSS_description.go
-func ParseMigrationFileName(filename string) (version string, description string, err error) {
+func ParseMigrationFileName(filename string) (version, description string, err error) {
 	// Remove directory path
 	base := filepath.Base(filename)
 
