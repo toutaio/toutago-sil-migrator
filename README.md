@@ -1,10 +1,10 @@
-# Síl - Database Migration and Seeding Tool
+# Síl - Database Migration Tool for Go
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Coverage](https://img.shields.io/badge/Coverage-71.0%25-yellowgreen.svg)]()
 
-Síl is a powerful, standalone database migration and seeding tool for Go applications, inspired by Rails, Laravel, Flyway, and Alembic.
+> **Síl** (Irish for "seed" or "lineage") - A powerful, standalone database migration and seeding tool for Go applications. Part of the **Toutā Framework** ecosystem.
 
 ## ✨ Features
 
@@ -343,4 +343,14 @@ Inspired by:
 
 ---
 
-**Made with ❤️ by the Toutago team**
+## About Toutā Framework
+
+**Toutā** (Proto-Celtic for "people" or "tribe") is a modular Go web framework emphasizing:
+- Interface-first design for pluggability
+- Configuration-driven architecture  
+- Dependency injection for testability
+- Zero framework lock-in
+
+**Síl** (Irish for "seed" or "lineage") handles database migrations and seeding, providing type-safe schema evolution for your applications.
+
+**Made with ❤️ by the Toutā team**
