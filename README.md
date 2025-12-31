@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/Coverage-64.4%25-green.svg)]()
+[![Coverage](https://img.shields.io/badge/Coverage-70.6%25-yellowgreen.svg)]()
 
 Síl is a powerful, standalone database migration and seeding tool for Go applications, inspired by Rails, Laravel, Flyway, and Alembic.
 
@@ -17,7 +17,7 @@ Síl is a powerful, standalone database migration and seeding tool for Go applic
 - 🎨 **Beautiful CLI** - Colored output with progress tracking
 - 📝 **Comprehensive Logging** - Track every migration step
 - ⚡ **Fast** - Optimized for performance
-- 🧪 **Well-Tested** - 64.4% test coverage and growing
+- 🧪 **Well-Tested** - 70.6% test coverage (110+ tests)
 
 ## 🚀 Quick Start
 

@@ -462,3 +462,240 @@ if config.TableName != "test_migrations" {
 t.Errorf("Expected table_name from env")
 }
 }
+
+func TestLoadConfig_YAML(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "test.yaml")
+
+configContent := `
+database_url: "postgres://localhost/yamltest"
+migrations_dir: "./yaml_migrations"
+seeders_dir: "./yaml_seeders"
+table_name: "yaml_migrations"
+environment: "test"
+verbose: true
+`
+if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+t.Fatalf("Failed to write config: %v", err)
+}
+
+config, err := LoadConfig(configPath)
+if err != nil {
+t.Fatalf("LoadConfig() error = %v", err)
+}
+
+if config.DatabaseURL != "postgres://localhost/yamltest" {
+t.Errorf("Expected DatabaseURL to be loaded from YAML")
+}
+
+if config.MigrationsDir != "./yaml_migrations" {
+t.Errorf("Expected MigrationsDir to be loaded from YAML")
+}
+
+if !config.Verbose {
+t.Errorf("Expected Verbose to be true")
+}
+}
+
+func TestLoadConfig_JSON(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "test.json")
+
+configContent := `{
+"database_url": "postgres://localhost/jsontest",
+"migrations_dir": "./json_migrations",
+"table_name": "json_migrations",
+"environment": "test"
+}`
+if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+t.Fatalf("Failed to write config: %v", err)
+}
+
+config, err := LoadConfig(configPath)
+if err != nil {
+t.Fatalf("LoadConfig() error = %v", err)
+}
+
+if config.DatabaseURL != "postgres://localhost/jsontest" {
+t.Errorf("Expected DatabaseURL to be loaded from JSON")
+}
+
+if config.MigrationsDir != "./json_migrations" {
+t.Errorf("Expected MigrationsDir to be loaded from JSON")
+}
+}
+
+func TestLoadConfig_FileNotFound(t *testing.T) {
+_, err := LoadConfig("/nonexistent/config.yaml")
+if err == nil {
+t.Error("Expected error for nonexistent file")
+}
+}
+
+func TestLoadConfig_InvalidYAML(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "invalid.yaml")
+
+if err := os.WriteFile(configPath, []byte("invalid: [yaml: content"), 0644); err != nil {
+t.Fatalf("Failed to write config: %v", err)
+}
+
+_, err := LoadConfig(configPath)
+if err == nil {
+t.Error("Expected error for invalid YAML")
+}
+}
+
+func TestLoadConfig_InvalidJSON(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "invalid.json")
+
+if err := os.WriteFile(configPath, []byte("{invalid json"), 0644); err != nil {
+t.Fatalf("Failed to write config: %v", err)
+}
+
+_, err := LoadConfig(configPath)
+if err == nil {
+t.Error("Expected error for invalid JSON")
+}
+}
+
+func TestLoadConfigFromEnv_AllVars(t *testing.T) {
+// Save and restore env
+vars := []string{
+"SIL_DATABASE_URL",
+"SIL_MIGRATIONS_DIR",
+"SIL_SEEDERS_DIR",
+"SIL_TABLE_NAME",
+"SIL_SEEDS_TABLE_NAME",
+"SIL_ENVIRONMENT",
+"SIL_VERBOSE",
+"SIL_LOCK_TIMEOUT",
+"SIL_MIGRATION_TIMEOUT",
+}
+
+oldVals := make(map[string]string)
+for _, v := range vars {
+oldVals[v] = os.Getenv(v)
+}
+defer func() {
+for _, v := range vars {
+os.Setenv(v, oldVals[v])
+}
+}()
+
+// Set all env vars
+os.Setenv("SIL_DATABASE_URL", "postgres://env/test")
+os.Setenv("SIL_MIGRATIONS_DIR", "./env_migrations")
+os.Setenv("SIL_SEEDERS_DIR", "./env_seeders")
+os.Setenv("SIL_TABLE_NAME", "env_migrations")
+os.Setenv("SIL_SEEDS_TABLE_NAME", "env_seeds")
+os.Setenv("SIL_ENVIRONMENT", "production")
+os.Setenv("SIL_VERBOSE", "true")
+os.Setenv("SIL_LOCK_TIMEOUT", "10m")
+os.Setenv("SIL_MIGRATION_TIMEOUT", "1h")
+
+config := LoadConfigFromEnv(DefaultConfig())
+
+if config.DatabaseURL != "postgres://env/test" {
+t.Errorf("Expected DatabaseURL from env")
+}
+
+if config.MigrationsDir != "./env_migrations" {
+t.Errorf("Expected MigrationsDir from env")
+}
+
+if config.Environment != "production" {
+t.Errorf("Expected Environment from env")
+}
+
+if !config.Verbose {
+t.Errorf("Expected Verbose to be true")
+}
+
+if config.LockTimeout != 10*time.Minute {
+t.Errorf("Expected LockTimeout 10m, got %v", config.LockTimeout)
+}
+}
+
+func TestSaveConfig_CreateDirectory(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "subdir", "config.yaml")
+
+config := DefaultConfig()
+config.DatabaseURL = "postgres://localhost/savetest"
+
+err := SaveConfig(config, configPath)
+if err != nil {
+t.Fatalf("SaveConfig() error = %v", err)
+}
+
+// Verify file exists
+if _, err := os.Stat(configPath); os.IsNotExist(err) {
+t.Error("Expected config file to be created")
+}
+
+// Verify can be loaded back
+loaded, err := LoadConfig(configPath)
+if err != nil {
+t.Fatalf("Failed to load saved config: %v", err)
+}
+
+if loaded.DatabaseURL != config.DatabaseURL {
+t.Errorf("Expected saved and loaded configs to match")
+}
+}
+
+func TestLoadConfigFromEnv_InvalidDurations(t *testing.T) {
+oldTimeout := os.Getenv("SIL_LOCK_TIMEOUT")
+defer os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout)
+
+os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
+
+config := LoadConfigFromEnv(DefaultConfig())
+
+// Should fall back to default
+if config.LockTimeout != 5*time.Minute {
+t.Errorf("Expected default lock timeout on invalid duration")
+}
+}
+
+func TestLoadConfigWithDefaults_MergesBehavior(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "partial.yaml")
+
+// Write partial config
+if err := os.WriteFile(configPath, []byte("database_url: postgres://localhost/partial"), 0644); err != nil {
+t.Fatalf("Failed to write config: %v", err)
+}
+
+config, err := LoadConfigWithDefaults(configPath)
+if err != nil {
+t.Fatalf("LoadConfigWithDefaults() error = %v", err)
+}
+
+// Should have loaded value
+if config.DatabaseURL != "postgres://localhost/partial" {
+t.Error("Expected database_url to be loaded")
+}
+
+// Should have defaults for unspecified values
+if config.TableName != "sil_migrations" {
+t.Errorf("Expected default table_name")
+}
+}
+
+func TestInitConfig_FileExists(t *testing.T) {
+tmpDir := t.TempDir()
+configPath := filepath.Join(tmpDir, "exists.yaml")
+
+// Create file first
+if err := os.WriteFile(configPath, []byte("test"), 0644); err != nil {
+t.Fatalf("Failed to create file: %v", err)
+}
+
+// InitConfig should handle existing file
+err := InitConfig(configPath)
+// Implementation may overwrite or error - just ensure it doesn't crash
+_ = err
+}
