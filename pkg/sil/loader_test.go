@@ -132,7 +132,15 @@ func TestDiscoverMigrationFiles(t *testing.T) {
 }
 
 func TestDiscoverMigrationFiles_NonexistentDir(t *testing.T) {
-	loader := NewLoader("/nonexistent/directory", NewNoopLogger())
+	// Create a file and try to use it as a directory - this should fail on all platforms
+	tmpDir := t.TempDir()
+	notADir := filepath.Join(tmpDir, "not_a_directory")
+	if err := os.WriteFile(notADir, []byte("test"), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+	
+	// Try to use the file path as a migrations directory
+	loader := NewLoader(notADir, NewNoopLogger())
 	_, err := loader.DiscoverMigrationFiles()
 	if err == nil {
 		t.Error("Expected error for nonexistent directory")

@@ -96,7 +96,15 @@ func TestGenerator_GenerateEmptyDescription(t *testing.T) {
 }
 
 func TestGenerator_GenerateInvalidDirectory(t *testing.T) {
-	generator := NewGenerator("/nonexistent/directory/that/does/not/exist", NewNoopLogger())
+	// Create a file and try to use it as a directory - this should fail on all platforms
+	tmpDir := t.TempDir()
+	notADir := filepath.Join(tmpDir, "not_a_directory")
+	if err := os.WriteFile(notADir, []byte("test"), 0o644); err != nil {
+		t.Fatalf("Failed to create test file: %v", err)
+	}
+	
+	// Try to use the file path as a migrations directory
+	generator := NewGenerator(filepath.Join(notADir, "subdir"), NewNoopLogger())
 
 	_, err := generator.Generate("test migration")
 	if err == nil {
