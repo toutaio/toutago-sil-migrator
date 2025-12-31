@@ -6,92 +6,69 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.22.x', '1.23.x']
     
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: sil_test
-          POSTGRES_PASSWORD: sil_test
-          POSTGRES_DB: sil_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Set up Go
+      
+    - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
-
-    - name: Cache Go modules
-      uses: actions/cache@v3
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-
+        go-version: ${{ matrix.go-version }}
+        
     - name: Download dependencies
       run: go mod download
-
+      
+    - name: Verify dependencies
+      run: go mod verify
+      
     - name: Run tests
-      run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
-      env:
-        SIL_DATABASE_URL: postgres://sil_test:sil_test@localhost:5432/sil_test?sslmode=disable
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage.out
-        flags: unittests
-        name: codecov-umbrella
+      run: go test -v -race -coverprofile=coverage.out ./...
+      
+    - name: Check coverage
+      run: |
+        coverage=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        echo "Coverage: $coverage%"
+        if (( $(echo "$coverage < 80.0" | bc -l) )); then
+          echo "Coverage below 80%"
+          exit 1
+        fi
+      shell: bash
+        
+    - name: Run go vet
+      run: go vet ./...
+      
+    - name: Run staticcheck
+      run: |
+        go install honnef.co/go/tools/cmd/staticcheck@latest
+        staticcheck ./...
 
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Set up Go
+      
+    - name: Setup Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
-
-    - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v3
+        go-version: '1.22.x'
+        
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v4
       with:
         version: latest
-        args: --timeout=5m
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.22'
-
-    - name: Build CLI
-      run: go build -v -o bin/sil ./cmd/sil
-
-    - name: Verify binary
-      run: ./bin/sil --version || echo "Version command not yet implemented"
