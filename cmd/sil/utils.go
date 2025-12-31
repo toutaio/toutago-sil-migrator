@@ -111,3 +111,33 @@ func isColorSupported() bool {
 	// Assume color is supported on Unix-like systems
 	return true
 }
+
+func printBanner(title string) {
+width := 60
+fmt.Println()
+fmt.Println(strings.Repeat("=", width))
+padding := (width - len(title) - 2) / 2
+fmt.Printf("%s %s %s\n", strings.Repeat("=", padding), title, strings.Repeat("=", padding))
+fmt.Println(strings.Repeat("=", width))
+}
+
+func toSnakeCase(s string) string {
+var result strings.Builder
+for i, r := range s {
+if i > 0 && r >= 'A' && r <= 'Z' {
+result.WriteRune('_')
+}
+result.WriteRune(r)
+}
+return strings.ToLower(result.String())
+}
+
+func toPascalCase(s string) string {
+parts := strings.Split(s, "_")
+for i, part := range parts {
+if len(part) > 0 {
+parts[i] = strings.ToUpper(part[:1]) + part[1:]
+}
+}
+return strings.Join(parts, "")
+}

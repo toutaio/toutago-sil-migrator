@@ -95,6 +95,30 @@ sil rollback
 sil rollback --steps 2
 ```
 
+### Seeding
+
+```bash
+# Create a seeder
+sil seed create users
+
+# Run all seeders
+sil seed --all
+
+# Run specific seeders
+sil seed users roles
+
+# Preview without executing
+sil seed --dry-run --all
+
+# Force re-run
+sil seed --force --all
+
+# Check seeder status
+sil seed status
+```
+
+See [Seeding Guide](docs/SEEDING.md) for complete documentation.
+
 ## 📖 Documentation
 
 - [CLI Reference](cmd/sil/README.md) - Complete CLI documentation
