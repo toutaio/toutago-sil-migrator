@@ -1,6 +1,7 @@
 package sil
 
 import (
+	"fmt"
 	"context"
 	"errors"
 	"testing"
@@ -43,7 +44,7 @@ func (m *mockAdapter) Query(ctx context.Context, query string, args ...interface
 	if m.queryFunc != nil {
 		return m.queryFunc(ctx, query, args...)
 	}
-	return nil, nil
+	return newMockRows([][]interface{}{}), nil
 }
 
 func (m *mockAdapter) BeginTx(ctx context.Context) (Transaction, error) {
@@ -114,7 +115,7 @@ func (m *mockTransaction) Exec(ctx context.Context, query string, args ...interf
 }
 
 func (m *mockTransaction) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
-	return nil, nil
+	return newMockRows([][]interface{}{}), nil
 }
 
 // mockLock is a mock lock for testing.
@@ -700,3 +701,56 @@ _ = err
 }
 
 
+
+// mockRows implements Rows for testing
+type mockRows struct {
+data    [][]interface{}
+current int
+columns []string
+}
+
+func newMockRows(data [][]interface{}) *mockRows {
+return &mockRows{
+data:    data,
+current: -1,
+}
+}
+
+func (m *mockRows) Next() bool {
+m.current++
+return m.current < len(m.data)
+}
+
+func (m *mockRows) Scan(dest ...interface{}) error {
+if m.current < 0 || m.current >= len(m.data) {
+return fmt.Errorf("no current row")
+}
+
+row := m.data[m.current]
+if len(row) != len(dest) {
+return fmt.Errorf("column count mismatch")
+}
+
+for i, v := range row {
+switch d := dest[i].(type) {
+case *int:
+*d = v.(int)
+case *string:
+*d = v.(string)
+case *time.Time:
+*d = v.(time.Time)
+default:
+return fmt.Errorf("unsupported type")
+}
+}
+
+return nil
+}
+
+func (m *mockRows) Close() error {
+return nil
+}
+
+func (m *mockRows) Err() error {
+return nil
+}
