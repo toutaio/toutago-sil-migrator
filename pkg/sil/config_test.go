@@ -340,7 +340,7 @@ func TestFindConfigFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get working directory: %v", err)
 	}
-	defer os.Chdir(oldDir)
+	defer func() { _ = os.Chdir(oldDir) }()
 
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
@@ -364,7 +364,7 @@ func TestFindConfigFile_NotFound(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get working directory: %v", err)
 	}
-	defer os.Chdir(oldDir)
+	defer func() { _ = os.Chdir(oldDir) }()
 
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
@@ -391,7 +391,7 @@ func TestLoadConfigAuto(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get working directory: %v", err)
 	}
-	defer os.Chdir(oldDir)
+	defer func() { _ = os.Chdir(oldDir) }()
 
 	if err := os.Chdir(tmpDir); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
@@ -648,7 +648,7 @@ func TestSaveConfig_CreateDirectory(t *testing.T) {
 
 func TestLoadConfigFromEnv_InvalidDurations(t *testing.T) {
 	oldTimeout := os.Getenv("SIL_LOCK_TIMEOUT")
-	defer os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout)
+	defer func() { _ = os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout) }()
 
 	_ = os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
 
@@ -706,7 +706,7 @@ func TestLoadConfigWithDefaultsFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name())
+	defer func() { _ = os.Remove(tmpfile.Name()) }()
 
 	content := `
 database_url: postgres://localhost/testdb

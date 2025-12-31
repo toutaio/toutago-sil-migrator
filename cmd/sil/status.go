@@ -86,8 +86,8 @@ func runStatus(cmd *cobra.Command, args []string) error {
 
 	// Table output
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	_ = fmt.Fprintln(w, "VERSION\tDESCRIPTION\tSTATUS\tBATCH\tEXECUTED AT")
-	_ = fmt.Fprintln(w, "-------\t-----------\t------\t-----\t-----------")
+	_, _ = fmt.Fprintln(w, "VERSION\tDESCRIPTION\tSTATUS\tBATCH\tEXECUTED AT")
+	_, _ = fmt.Fprintln(w, "-------\t-----------\t------\t-----\t-----------")
 
 	appliedCount := 0
 	pendingCount := 0
@@ -108,7 +108,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 			pendingCount++
 		}
 
-		_ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+		_, _ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 			status.Version,
 			truncate(status.Description, 40),
 			statusStr,
@@ -117,7 +117,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 		)
 	}
 
-	w.Flush()
+	_ = w.Flush()
 
 	// Summary
 	fmt.Printf("\nTotal: %d migrations (%d applied, %d pending)\n",

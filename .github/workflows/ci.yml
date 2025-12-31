@@ -140,7 +140,6 @@ jobs:
       
     - name: Run staticcheck
       run: staticcheck ./...
-      continue-on-error: true  # Allow staticcheck warnings while fixing incrementally
       
     - name: Verify go.mod is tidy
       run: |
@@ -256,4 +255,3 @@ jobs:
       uses: golangci/golangci-lint-action@v4
       with:
         version: latest
-      continue-on-error: true  # Allow lint failures while fixing incrementally

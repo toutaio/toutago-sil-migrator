@@ -248,7 +248,7 @@ func (a *SQLiteAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 	}
 
 	// Write process info to lock file
-	_ = fmt.Fprintf(file, "pid: %d\ntime: %s\n", os.Getpid(), time.Now().Format(time.RFC3339))
+	_, _ = fmt.Fprintf(file, "pid: %d\ntime: %s\n", os.Getpid(), time.Now().Format(time.RFC3339))
 	_ = file.Close()
 
 	a.logger.Debug("File lock acquired")

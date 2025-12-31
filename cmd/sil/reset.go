@@ -42,7 +42,7 @@ func runReset(cmd *cobra.Command, args []string) error {
 	if !resetForce {
 		fmt.Print("⚠️  This will rollback ALL migrations. Are you sure? (yes/no): ")
 		var response string
-		fmt.Scanln(&response)
+		_, _ = fmt.Scanln(&response)
 		if response != "yes" {
 			fmt.Println("Cancelled")
 			return nil

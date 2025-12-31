@@ -521,7 +521,7 @@ func TestPostgresLock_IsLocked(t *testing.T) {
 		t.Error("IsLocked() should return true for new lock")
 	}
 
-	lock.Release()
+	_ = lock.Release()
 
 	if lock.IsLocked() {
 		t.Error("IsLocked() should return false after release")

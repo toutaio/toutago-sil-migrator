@@ -131,7 +131,7 @@ func TestIntegrationLocking(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to acquire lock1: %v", err)
 	}
-	defer lock1.Release()
+	defer func() { _ = lock1.Release() }()
 
 	if !lock1.IsLocked() {
 		t.Error("Lock1 should be locked")
@@ -172,7 +172,7 @@ func TestIntegrationLocking(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to acquire lock2 after release: %v", err)
 	}
-	defer lock2.Release()
+	defer func() { _ = lock2.Release() }()
 
 	if !lock2.IsLocked() {
 		t.Error("Lock2 should be locked")
@@ -420,9 +420,9 @@ func cleanupDatabase(t *testing.T, config *sil.Config) {
 	defer func() { _ = db.Close() }()
 
 	// Drop test tables
-	db.Exec("DROP TABLE IF EXISTS test_users CASCADE")
-	db.Exec("DROP TABLE IF EXISTS test_table CASCADE")
-	db.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", config.TableName))
+	_, _ = db.Exec("DROP TABLE IF EXISTS test_users CASCADE")
+	_, _ = db.Exec("DROP TABLE IF EXISTS test_table CASCADE")
+	_, _ = db.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", config.TableName))
 }
 
 func createTestMigration(version, description, upSQL, downSQL string) sil.Migration {
@@ -647,7 +647,7 @@ func TestIntegrationTransactionQuery(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to begin transaction: %v", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// Query within transaction
 	rows, err := tx.Query(ctx, "SELECT version FROM "+config.TableName)

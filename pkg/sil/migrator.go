@@ -56,7 +56,7 @@ func (m *migrator) Migrate(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrLockAcquisitionFailed, err)
 	}
-	defer lock.Release()
+	defer func() { _ = lock.Release() }()
 
 	m.logger.Debug("Migration lock acquired")
 
@@ -123,7 +123,7 @@ func (m *migrator) MigrateUp(ctx context.Context, steps int) error {
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrLockAcquisitionFailed, err)
 	}
-	defer lock.Release()
+	defer func() { _ = lock.Release() }()
 
 	// Ensure migrations table exists
 	if err := m.adapter.CreateMigrationsTable(ctx); err != nil {
@@ -188,7 +188,7 @@ func (m *migrator) MigrateDown(ctx context.Context, steps int) error {
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrLockAcquisitionFailed, err)
 	}
-	defer lock.Release()
+	defer func() { _ = lock.Release() }()
 
 	// Get applied migrations
 	applied, err := m.adapter.GetAppliedMigrations(ctx)
@@ -243,7 +243,7 @@ func (m *migrator) Rollback(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrLockAcquisitionFailed, err)
 	}
-	defer lock.Release()
+	defer func() { _ = lock.Release() }()
 
 	// Get applied migrations
 	applied, err := m.adapter.GetAppliedMigrations(ctx)
@@ -335,7 +335,7 @@ func (m *migrator) Reset(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrLockAcquisitionFailed, err)
 	}
-	defer lock.Release()
+	defer func() { _ = lock.Release() }()
 
 	// Get applied migrations
 	applied, err := m.adapter.GetAppliedMigrations(ctx)
