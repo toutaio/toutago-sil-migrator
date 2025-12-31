@@ -16,7 +16,7 @@ import (
 // Set DATABASE_URL environment variable to run against a real database.
 func IntegrationTestConfig() *sil.Config {
 	config := sil.DefaultConfig()
-	config.DatabaseURL = "postgres://postgres:postgres@localhost:5432/sil_test?sslmode=disable"
+	config.DatabaseURL = "postgres://postgres:postgres@localhost:5433/sil_test?sslmode=disable"
 	config.MigrationsDir = "./test_migrations"
 	config.TableName = "sil_test_migrations"
 	config.Verbose = true
