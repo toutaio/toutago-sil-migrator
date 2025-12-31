@@ -77,7 +77,7 @@ func runSeed(cmd *cobra.Command, args []string) error {
 	if err := adapter.Connect(ctx, cfg); err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create seed manager
 	manager, err := sil.NewSeedManager(cfg, adapter)
@@ -186,7 +186,7 @@ func runSeedCreate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	data := map[string]string{
 		"Name":      toPascalCase(name),
@@ -224,7 +224,7 @@ func runSeedStatus(cmd *cobra.Command, args []string) error {
 	if err := adapter.Connect(ctx, cfg); err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create seed manager
 	manager, err := sil.NewSeedManager(cfg, adapter)

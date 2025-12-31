@@ -15,7 +15,7 @@ func TestMySQLAdapter_CreateMigrationsTable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -45,7 +45,7 @@ func TestMySQLAdapter_GetAppliedMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -88,7 +88,7 @@ func TestMySQLAdapter_GetAppliedMigrations_Error(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -118,7 +118,7 @@ func TestMySQLAdapter_RecordMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -149,7 +149,7 @@ func TestMySQLAdapter_RemoveMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -180,7 +180,7 @@ func TestMySQLAdapter_GetLastBatch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -215,7 +215,7 @@ func TestMySQLAdapter_Lock(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -251,7 +251,7 @@ func TestMySQLAdapter_Lock_Failed(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db: db,
@@ -283,7 +283,7 @@ func TestMySQLAdapter_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db:     db,
@@ -310,7 +310,7 @@ func TestMySQLAdapter_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db:     db,
@@ -332,7 +332,7 @@ func TestMySQLAdapter_Query(t *testing.T) {
 		t.Error("Query() returned nil result")
 	}
 
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("unfulfilled expectations: %v", err)
@@ -344,7 +344,7 @@ func TestMySQLAdapter_BeginTx(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &MySQLAdapter{
 		db:     db,
@@ -398,7 +398,7 @@ func TestMySQLTx_Commit(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -426,7 +426,7 @@ func TestMySQLTx_Rollback(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -454,7 +454,7 @@ func TestMySQLLock_Release(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	lock := &mysqlLock{
 		db:       db,

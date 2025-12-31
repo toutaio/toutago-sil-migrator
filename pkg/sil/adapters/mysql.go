@@ -53,7 +53,7 @@ func (a *MySQLAdapter) Connect(ctx context.Context, config *sil.Config) error {
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		_ = db.Close()
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -134,7 +134,7 @@ func (a *MySQLAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migratio
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var records []sil.MigrationRecord
 	for rows.Next() {

@@ -147,7 +147,7 @@ func (g *Generator) generateFromTemplate(path string, tmpl string, data interfac
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	if err := t.Execute(file, data); err != nil {
 		return fmt.Errorf("failed to execute template: %w", err)

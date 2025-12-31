@@ -292,7 +292,7 @@ func (sm *seedManager) getExecutedSeeders(ctx context.Context) ([]SeedRecord, er
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var records []SeedRecord
 	for rows.Next() {

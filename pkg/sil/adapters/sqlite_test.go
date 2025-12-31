@@ -14,7 +14,7 @@ func TestSQLiteAdapter_CreateMigrationsTable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db: db,
@@ -46,7 +46,7 @@ func TestSQLiteAdapter_GetAppliedMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db: db,
@@ -85,7 +85,7 @@ func TestSQLiteAdapter_RecordMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db: db,
@@ -116,7 +116,7 @@ func TestSQLiteAdapter_RemoveMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db: db,
@@ -147,7 +147,7 @@ func TestSQLiteAdapter_GetLastBatch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db: db,
@@ -182,7 +182,7 @@ func TestSQLiteAdapter_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db:     db,
@@ -209,7 +209,7 @@ func TestSQLiteAdapter_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db:     db,
@@ -231,7 +231,7 @@ func TestSQLiteAdapter_Query(t *testing.T) {
 		t.Error("Query() returned nil result")
 	}
 
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("unfulfilled expectations: %v", err)
@@ -243,7 +243,7 @@ func TestSQLiteAdapter_BeginTx(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &SQLiteAdapter{
 		db:     db,
@@ -297,7 +297,7 @@ func TestSQLiteTx_Commit(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -325,7 +325,7 @@ func TestSQLiteTx_Rollback(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -353,7 +353,7 @@ func TestSQLiteTx_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -383,7 +383,7 @@ func TestSQLiteTx_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -408,7 +408,7 @@ func TestSQLiteTx_Query(t *testing.T) {
 		t.Error("Query() returned nil result")
 	}
 
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("unfulfilled expectations: %v", err)

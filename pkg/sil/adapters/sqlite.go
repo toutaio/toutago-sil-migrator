@@ -74,13 +74,13 @@ func (a *SQLiteAdapter) Connect(ctx context.Context, config *sil.Config) error {
 
 	// Test connection
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		_ = db.Close()
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
 	// Enable foreign keys
 	if _, err := db.ExecContext(ctx, "PRAGMA foreign_keys = ON"); err != nil {
-		db.Close()
+		_ = db.Close()
 		return fmt.Errorf("failed to enable foreign keys: %w", err)
 	}
 
@@ -169,7 +169,7 @@ func (a *SQLiteAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migrati
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var records []sil.MigrationRecord
 	for rows.Next() {
@@ -232,7 +232,7 @@ func (a *SQLiteAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 		// Lock file exists, check if stale (older than lock timeout)
 		if time.Since(info.ModTime()) > a.config.LockTimeout {
 			a.logger.Warn("Removing stale lock file")
-			os.Remove(a.lockFile)
+			_ = os.Remove(a.lockFile)
 		} else {
 			return nil, sil.ErrLockAcquisitionFailed
 		}
@@ -248,8 +248,8 @@ func (a *SQLiteAdapter) Lock(ctx context.Context) (sil.Lock, error) {
 	}
 
 	// Write process info to lock file
-	fmt.Fprintf(file, "pid: %d\ntime: %s\n", os.Getpid(), time.Now().Format(time.RFC3339))
-	file.Close()
+	_ = fmt.Fprintf(file, "pid: %d\ntime: %s\n", os.Getpid(), time.Now().Format(time.RFC3339))
+	_ = file.Close()
 
 	a.logger.Debug("File lock acquired")
 

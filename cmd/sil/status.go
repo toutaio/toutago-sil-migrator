@@ -59,7 +59,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 	if err := adapter.Connect(ctx, config); err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create migrator
 	migrator, err := sil.NewMigrator(config, adapter)
@@ -86,8 +86,8 @@ func runStatus(cmd *cobra.Command, args []string) error {
 
 	// Table output
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "VERSION\tDESCRIPTION\tSTATUS\tBATCH\tEXECUTED AT")
-	fmt.Fprintln(w, "-------\t-----------\t------\t-----\t-----------")
+	_ = fmt.Fprintln(w, "VERSION\tDESCRIPTION\tSTATUS\tBATCH\tEXECUTED AT")
+	_ = fmt.Fprintln(w, "-------\t-----------\t------\t-----\t-----------")
 
 	appliedCount := 0
 	pendingCount := 0
@@ -108,7 +108,7 @@ func runStatus(cmd *cobra.Command, args []string) error {
 			pendingCount++
 		}
 
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+		_ = fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 			status.Version,
 			truncate(status.Description, 40),
 			statusStr,

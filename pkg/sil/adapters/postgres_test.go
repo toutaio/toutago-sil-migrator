@@ -15,7 +15,7 @@ func TestPostgresAdapter_CreateMigrationsTable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -45,7 +45,7 @@ func TestPostgresAdapter_GetAppliedMigrations(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -84,7 +84,7 @@ func TestPostgresAdapter_RecordMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -115,7 +115,7 @@ func TestPostgresAdapter_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db:     db,
@@ -142,7 +142,7 @@ func TestPostgresAdapter_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db:     db,
@@ -164,7 +164,7 @@ func TestPostgresAdapter_Query(t *testing.T) {
 		t.Error("Query() returned nil result")
 	}
 
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("unfulfilled expectations: %v", err)
@@ -176,7 +176,7 @@ func TestPostgresAdapter_BeginTx(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db:     db,
@@ -230,7 +230,7 @@ func TestPostgresAdapter_Lock(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -266,7 +266,7 @@ func TestPostgresAdapter_GetAppliedMigrations_Error(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -296,7 +296,7 @@ func TestPostgresAdapter_RemoveMigration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -327,7 +327,7 @@ func TestPostgresAdapter_GetLastBatch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	adapter := &PostgresAdapter{
 		db: db,
@@ -362,7 +362,7 @@ func TestPostgresTx_Commit(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -390,7 +390,7 @@ func TestPostgresTx_Rollback(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -418,7 +418,7 @@ func TestPostgresTx_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -448,7 +448,7 @@ func TestPostgresTx_Query(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	mock.ExpectBegin()
 	sqlTx, _ := db.Begin()
@@ -473,7 +473,7 @@ func TestPostgresTx_Query(t *testing.T) {
 		t.Error("Query() returned nil result")
 	}
 
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("unfulfilled expectations: %v", err)
@@ -485,7 +485,7 @@ func TestPostgresLock_Release(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	releaseCalled := false
 	releaseFunc := func() error {

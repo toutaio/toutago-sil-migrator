@@ -82,25 +82,25 @@ const (
 // Info logs an informational message in green.
 func (l *colorLogger) Info(msg string, args ...interface{}) {
 	message := fmt.Sprintf(msg, args...)
-	fmt.Fprintf(os.Stdout, "%s[INFO]%s %s\n", colorGreen, colorReset, message)
+	_, _ = fmt.Fprintf(os.Stdout, "%s[INFO]%s %s\n", colorGreen, colorReset, message)
 }
 
 // Warn logs a warning message in yellow.
 func (l *colorLogger) Warn(msg string, args ...interface{}) {
 	message := fmt.Sprintf(msg, args...)
-	fmt.Fprintf(os.Stdout, "%s[WARN]%s %s\n", colorYellow, colorReset, message)
+	_, _ = fmt.Fprintf(os.Stdout, "%s[WARN]%s %s\n", colorYellow, colorReset, message)
 }
 
 // Error logs an error message in red.
 func (l *colorLogger) Error(msg string, args ...interface{}) {
 	message := fmt.Sprintf(msg, args...)
-	fmt.Fprintf(os.Stderr, "%s[ERROR]%s %s\n", colorRed, colorReset, message)
+	_, _ = fmt.Fprintf(os.Stderr, "%s[ERROR]%s %s\n", colorRed, colorReset, message)
 }
 
 // Debug logs a debug message in cyan (only if verbose is enabled).
 func (l *colorLogger) Debug(msg string, args ...interface{}) {
 	if l.verbose {
 		message := fmt.Sprintf(msg, args...)
-		fmt.Fprintf(os.Stdout, "%s[DEBUG]%s %s\n", colorCyan, colorReset, message)
+		_, _ = fmt.Fprintf(os.Stdout, "%s[DEBUG]%s %s\n", colorCyan, colorReset, message)
 	}
 }

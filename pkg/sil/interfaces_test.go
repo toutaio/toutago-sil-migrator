@@ -80,7 +80,7 @@ func TestRowsAdapter(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	rows := sqlmock.NewRows([]string{"id", "name"}).
 		AddRow(1, "test1").
@@ -154,7 +154,7 @@ func TestRowsAdapter_Error(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create mock: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	expectedErr := errors.New("scan error")
 	rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -169,7 +169,7 @@ func TestRowsAdapter_Error(t *testing.T) {
 	}
 
 	adapter := NewRowsAdapter(sqlRows)
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Try to get the row which has an error
 	adapter.Next()

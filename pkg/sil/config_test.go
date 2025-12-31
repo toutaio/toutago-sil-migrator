@@ -150,15 +150,15 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	originalEnv := os.Getenv("SIL_ENVIRONMENT")
 
 	// Set test env vars
-	os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
-	os.Setenv("SIL_ENVIRONMENT", "testing")
-	os.Setenv("SIL_VERBOSE", "true")
+	_ = os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
+	_ = os.Setenv("SIL_ENVIRONMENT", "testing")
+	_ = os.Setenv("SIL_VERBOSE", "true")
 
 	defer func() {
 		// Restore original env vars
-		os.Setenv("SIL_DATABASE_URL", originalURL)
-		os.Setenv("SIL_ENVIRONMENT", originalEnv)
-		os.Unsetenv("SIL_VERBOSE")
+		_ = os.Setenv("SIL_DATABASE_URL", originalURL)
+		_ = os.Setenv("SIL_ENVIRONMENT", originalEnv)
+		_ = os.Unsetenv("SIL_VERBOSE")
 	}()
 
 	config := DefaultConfig()
@@ -438,15 +438,15 @@ func TestLoadConfigFromEnv_Complete(t *testing.T) {
 	oldDir := os.Getenv("SIL_MIGRATIONS_DIR")
 	oldTable := os.Getenv("SIL_TABLE_NAME")
 	defer func() {
-		os.Setenv("SIL_DATABASE_URL", oldURL)
-		os.Setenv("SIL_MIGRATIONS_DIR", oldDir)
-		os.Setenv("SIL_TABLE_NAME", oldTable)
+		_ = os.Setenv("SIL_DATABASE_URL", oldURL)
+		_ = os.Setenv("SIL_MIGRATIONS_DIR", oldDir)
+		_ = os.Setenv("SIL_TABLE_NAME", oldTable)
 	}()
 
 	// Set env vars
-	os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
-	os.Setenv("SIL_MIGRATIONS_DIR", "./test_migrations")
-	os.Setenv("SIL_TABLE_NAME", "test_migrations")
+	_ = os.Setenv("SIL_DATABASE_URL", "postgres://localhost/envtest")
+	_ = os.Setenv("SIL_MIGRATIONS_DIR", "./test_migrations")
+	_ = os.Setenv("SIL_TABLE_NAME", "test_migrations")
 
 	config := LoadConfigFromEnv(DefaultConfig())
 
@@ -580,20 +580,20 @@ func TestLoadConfigFromEnv_AllVars(t *testing.T) {
 	}
 	defer func() {
 		for _, v := range vars {
-			os.Setenv(v, oldVals[v])
+			_ = os.Setenv(v, oldVals[v])
 		}
 	}()
 
 	// Set all env vars
-	os.Setenv("SIL_DATABASE_URL", "postgres://env/test")
-	os.Setenv("SIL_MIGRATIONS_DIR", "./env_migrations")
-	os.Setenv("SIL_SEEDERS_DIR", "./env_seeders")
-	os.Setenv("SIL_TABLE_NAME", "env_migrations")
-	os.Setenv("SIL_SEEDS_TABLE_NAME", "env_seeds")
-	os.Setenv("SIL_ENVIRONMENT", "production")
-	os.Setenv("SIL_VERBOSE", "true")
-	os.Setenv("SIL_LOCK_TIMEOUT", "10m")
-	os.Setenv("SIL_MIGRATION_TIMEOUT", "1h")
+	_ = os.Setenv("SIL_DATABASE_URL", "postgres://env/test")
+	_ = os.Setenv("SIL_MIGRATIONS_DIR", "./env_migrations")
+	_ = os.Setenv("SIL_SEEDERS_DIR", "./env_seeders")
+	_ = os.Setenv("SIL_TABLE_NAME", "env_migrations")
+	_ = os.Setenv("SIL_SEEDS_TABLE_NAME", "env_seeds")
+	_ = os.Setenv("SIL_ENVIRONMENT", "production")
+	_ = os.Setenv("SIL_VERBOSE", "true")
+	_ = os.Setenv("SIL_LOCK_TIMEOUT", "10m")
+	_ = os.Setenv("SIL_MIGRATION_TIMEOUT", "1h")
 
 	config := LoadConfigFromEnv(DefaultConfig())
 
@@ -650,7 +650,7 @@ func TestLoadConfigFromEnv_InvalidDurations(t *testing.T) {
 	oldTimeout := os.Getenv("SIL_LOCK_TIMEOUT")
 	defer os.Setenv("SIL_LOCK_TIMEOUT", oldTimeout)
 
-	os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
+	_ = os.Setenv("SIL_LOCK_TIMEOUT", "invalid")
 
 	config := LoadConfigFromEnv(DefaultConfig())
 
@@ -716,7 +716,7 @@ verbose: true
 	if _, err := tmpfile.Write([]byte(content)); err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	_ = tmpfile.Close()
 
 	config, err := LoadConfigWithDefaults(tmpfile.Name())
 	if err != nil {
@@ -738,16 +738,16 @@ verbose: true
 
 func TestLoadConfigFromEnvWithValues(t *testing.T) {
 	// Set env vars
-	os.Setenv("SIL_DATABASE_URL", "postgres://envhost/envdb")
-	os.Setenv("SIL_MIGRATIONS_DIR", "./env-migrations")
-	os.Setenv("SIL_VERBOSE", "true")
-	os.Setenv("SIL_ENVIRONMENT", "production")
+	_ = os.Setenv("SIL_DATABASE_URL", "postgres://envhost/envdb")
+	_ = os.Setenv("SIL_MIGRATIONS_DIR", "./env-migrations")
+	_ = os.Setenv("SIL_VERBOSE", "true")
+	_ = os.Setenv("SIL_ENVIRONMENT", "production")
 
 	defer func() {
-		os.Unsetenv("SIL_DATABASE_URL")
-		os.Unsetenv("SIL_MIGRATIONS_DIR")
-		os.Unsetenv("SIL_VERBOSE")
-		os.Unsetenv("SIL_ENVIRONMENT")
+		_ = os.Unsetenv("SIL_DATABASE_URL")
+		_ = os.Unsetenv("SIL_MIGRATIONS_DIR")
+		_ = os.Unsetenv("SIL_VERBOSE")
+		_ = os.Unsetenv("SIL_ENVIRONMENT")
 	}()
 
 	config := LoadConfigFromEnv(DefaultConfig())

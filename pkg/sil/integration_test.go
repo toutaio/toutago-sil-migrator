@@ -50,7 +50,7 @@ func TestIntegrationPostgresAdapter(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Test create migrations table
 	if err := adapter.CreateMigrationsTable(ctx); err != nil {
@@ -124,7 +124,7 @@ func TestIntegrationLocking(t *testing.T) {
 	if err := adapter1.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect adapter1: %v", err)
 	}
-	defer adapter1.Close()
+	defer func() { _ = adapter1.Close() }()
 
 	// Acquire lock with first adapter
 	lock1, err := adapter1.Lock(ctx)
@@ -146,7 +146,7 @@ func TestIntegrationLocking(t *testing.T) {
 	if err := adapter2.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect adapter2: %v", err)
 	}
-	defer adapter2.Close()
+	defer func() { _ = adapter2.Close() }()
 
 	// Create a context with short timeout
 	ctxTimeout, cancel := context.WithTimeout(ctx, 2*time.Second)
@@ -219,7 +219,7 @@ func TestIntegrationMigrationLifecycle(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create migrator
 	migrator, err := sil.NewMigrator(config, adapter)
@@ -259,7 +259,7 @@ func TestIntegrationMigrationLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to check table existence: %v", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	if rows.Next() {
 		if err := rows.Scan(&exists); err != nil {
@@ -298,7 +298,7 @@ func TestIntegrationMigrationLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to check table existence: %v", err)
 	}
-	defer rows2.Close()
+	defer func() { _ = rows2.Close() }()
 
 	exists = false
 	if rows2.Next() {
@@ -346,7 +346,7 @@ func TestIntegrationTransactionRollback(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create migrator
 	migrator, err := sil.NewMigrator(config, adapter)
@@ -371,7 +371,7 @@ func TestIntegrationTransactionRollback(t *testing.T) {
 	if queryErr != nil {
 		t.Fatalf("Failed to check table existence: %v", queryErr)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	if rows.Next() {
 		if err := rows.Scan(&exists); err != nil {
@@ -403,7 +403,7 @@ func isDatabaseAvailable(dbURL string) bool {
 	if err != nil {
 		return false
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -417,7 +417,7 @@ func cleanupDatabase(t *testing.T, config *sil.Config) {
 		t.Logf("Failed to open database for cleanup: %v", err)
 		return
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Drop test tables
 	db.Exec("DROP TABLE IF EXISTS test_users CASCADE")
@@ -482,7 +482,7 @@ func TestIntegrationTransactionCommit(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	if err := adapter.CreateMigrationsTable(ctx); err != nil {
 		t.Fatalf("Failed to create migrations table: %v", err)
@@ -537,7 +537,7 @@ func TestIntegrationTransactionRollbackOnError(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	if err := adapter.CreateMigrationsTable(ctx); err != nil {
 		t.Fatalf("Failed to create migrations table: %v", err)
@@ -590,7 +590,7 @@ func TestIntegrationLockAcquisition(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Acquire lock
 	lock, err := adapter.Lock(ctx)
@@ -636,7 +636,7 @@ func TestIntegrationTransactionQuery(t *testing.T) {
 	if err := adapter.Connect(ctx, config); err != nil {
 		t.Fatalf("Failed to connect: %v", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	if err := adapter.CreateMigrationsTable(ctx); err != nil {
 		t.Fatalf("Failed to create migrations table: %v", err)
@@ -654,7 +654,7 @@ func TestIntegrationTransactionQuery(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to query in transaction: %v", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	// Count rows
 	count := 0

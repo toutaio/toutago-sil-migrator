@@ -55,7 +55,7 @@ func (a *PostgresAdapter) Connect(ctx context.Context, config *sil.Config) error
 	defer cancel()
 
 	if err := db.PingContext(pingCtx); err != nil {
-		db.Close()
+		_ = db.Close()
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -162,7 +162,7 @@ func (a *PostgresAdapter) GetAppliedMigrations(ctx context.Context) ([]sil.Migra
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var records []sil.MigrationRecord
 	for rows.Next() {

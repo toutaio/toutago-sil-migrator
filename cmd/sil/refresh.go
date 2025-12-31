@@ -69,7 +69,7 @@ func runRefresh(cmd *cobra.Command, args []string) error {
 	if err := adapter.Connect(ctx, config); err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer adapter.Close()
+	defer func() { _ = adapter.Close() }()
 
 	// Create migrator
 	migrator, err := sil.NewMigrator(config, adapter)
