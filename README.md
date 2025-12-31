@@ -8,12 +8,12 @@ Síl is a powerful, standalone database migration and seeding tool for Go applic
 
 ## ✨ Features
 
-- 🔒 **Distributed Locking** - Prevents concurrent migrations with PostgreSQL advisory locks
+- 🗄️ **Multi-Database Support** - PostgreSQL, MySQL, and SQLite with automatic detection
+- 🔒 **Distributed Locking** - Database-appropriate locks (advisory, named, file-based)
 - 💾 **Transaction Safety** - Automatic rollback on migration failures
 - 📦 **Batch Tracking** - Precise rollback control by migration batches
 - 🎯 **Type-Safe Migrations** - Write migrations in Go
 - 🔌 **Standalone** - Zero required dependencies (optional datamapper integration)
-- 🗄️ **Multi-Database** - PostgreSQL (MySQL, SQLite coming in Phase 2)
 - 🎨 **Beautiful CLI** - Colored output with progress tracking
 - 📝 **Comprehensive Logging** - Track every migration step
 - ⚡ **Fast** - Optimized for performance
