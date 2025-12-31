@@ -16,6 +16,8 @@ type mockAdapter struct {
 	queryFunc         func(ctx context.Context, query string, args ...interface{}) (Rows, error)
 	lockAcquired      bool
 	lockReleased      bool
+	tx                *mockTx
+	beginTxErr        error
 }
 
 func newMockAdapter() *mockAdapter {
@@ -48,6 +50,12 @@ func (m *mockAdapter) Query(ctx context.Context, query string, args ...interface
 }
 
 func (m *mockAdapter) BeginTx(ctx context.Context) (Transaction, error) {
+	if m.beginTxErr != nil {
+		return nil, m.beginTxErr
+	}
+	if m.tx != nil {
+		return m.tx, nil
+	}
 	return &mockTransaction{}, nil
 }
 
@@ -99,6 +107,9 @@ type mockTransaction struct {
 	committed  bool
 	rolledBack bool
 }
+
+// mockTx is an alias for mockTransaction
+type mockTx = mockTransaction
 
 func (m *mockTransaction) Commit() error {
 	m.committed = true

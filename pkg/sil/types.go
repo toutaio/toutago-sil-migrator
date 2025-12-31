@@ -133,6 +133,10 @@ func (c *Config) Validate() error {
 // Merge merges another configuration into this one, with the other config taking precedence.
 func (c *Config) Merge(other *Config) *Config {
 	result := *c
+	
+	if other == nil {
+		return &result
+	}
 
 	if other.DatabaseURL != "" {
 		result.DatabaseURL = other.DatabaseURL
@@ -176,6 +180,10 @@ func (c *Config) Merge(other *Config) *Config {
 
 // String returns a string representation of the config (with sensitive data masked).
 func (c *Config) String() string {
-	return fmt.Sprintf("Config{MigrationsDir: %s, Environment: %s, TableName: %s}",
-		c.MigrationsDir, c.Environment, c.TableName)
+	maskedURL := c.DatabaseURL
+	if len(maskedURL) > 20 {
+		maskedURL = maskedURL[:10] + "..." + maskedURL[len(maskedURL)-5:]
+	}
+	return fmt.Sprintf("Config{DatabaseURL: %s, MigrationsDir: %s, Environment: %s, TableName: %s}",
+		maskedURL, c.MigrationsDir, c.Environment, c.TableName)
 }

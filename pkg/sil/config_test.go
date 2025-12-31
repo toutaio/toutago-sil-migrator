@@ -699,3 +699,72 @@ err := InitConfig(configPath)
 // Implementation may overwrite or error - just ensure it doesn't crash
 _ = err
 }
+
+func TestLoadConfigWithDefaultsFile(t *testing.T) {
+// Create a temp config file
+tmpfile, err := os.CreateTemp("", "sil-*.yaml")
+if err != nil {
+t.Fatal(err)
+}
+defer os.Remove(tmpfile.Name())
+
+content := `
+database_url: postgres://localhost/testdb
+migrations_dir: ./custom-migrations
+verbose: true
+`
+if _, err := tmpfile.Write([]byte(content)); err != nil {
+t.Fatal(err)
+}
+tmpfile.Close()
+
+config, err := LoadConfigWithDefaults(tmpfile.Name())
+if err != nil {
+t.Fatalf("LoadConfigWithDefaults failed: %v", err)
+}
+
+if config.DatabaseURL != "postgres://localhost/testdb" {
+t.Errorf("Expected custom database URL, got %s", config.DatabaseURL)
+}
+
+if config.MigrationsDir != "./custom-migrations" {
+t.Errorf("Expected custom migrations dir, got %s", config.MigrationsDir)
+}
+
+if !config.Verbose {
+t.Error("Expected verbose to be true")
+}
+}
+
+func TestLoadConfigFromEnvWithValues(t *testing.T) {
+// Set env vars
+os.Setenv("SIL_DATABASE_URL", "postgres://envhost/envdb")
+os.Setenv("SIL_MIGRATIONS_DIR", "./env-migrations")
+os.Setenv("SIL_VERBOSE", "true")
+os.Setenv("SIL_ENVIRONMENT", "production")
+
+defer func() {
+os.Unsetenv("SIL_DATABASE_URL")
+os.Unsetenv("SIL_MIGRATIONS_DIR")
+os.Unsetenv("SIL_VERBOSE")
+os.Unsetenv("SIL_ENVIRONMENT")
+}()
+
+config := LoadConfigFromEnv(DefaultConfig())
+
+if config.DatabaseURL != "postgres://envhost/envdb" {
+t.Errorf("Expected env database URL, got %s", config.DatabaseURL)
+}
+
+if config.MigrationsDir != "./env-migrations" {
+t.Errorf("Expected env migrations dir, got %s", config.MigrationsDir)
+}
+
+if !config.Verbose {
+t.Error("Expected verbose to be true from env")
+}
+
+if config.Environment != "production" {
+t.Errorf("Expected production environment, got %s", config.Environment)
+}
+}
