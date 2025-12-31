@@ -352,8 +352,18 @@ func TestFindConfigFile(t *testing.T) {
 		t.Fatalf("FindConfigFile() error = %v", err)
 	}
 
-	if found != configPath {
-		t.Errorf("FindConfigFile() = %s, want %s", found, configPath)
+	// Evaluate symlinks for both paths to handle macOS /var -> /private/var symlink
+	foundAbs, err := filepath.EvalSymlinks(found)
+	if err != nil {
+		t.Fatalf("Failed to evaluate symlinks for found path: %v", err)
+	}
+	configPathAbs, err := filepath.EvalSymlinks(configPath)
+	if err != nil {
+		t.Fatalf("Failed to evaluate symlinks for config path: %v", err)
+	}
+
+	if foundAbs != configPathAbs {
+		t.Errorf("FindConfigFile() = %s, want %s", foundAbs, configPathAbs)
 	}
 }
 
