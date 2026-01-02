@@ -1,8 +1,9 @@
 # Síl - Database Migration Tool for Go
 
-[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go)](https://go.dev)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/Coverage-71.0%25-yellowgreen.svg)]()
+[![CI](https://github.com/toutaio/toutago-sil-migrator/actions/workflows/ci.yml/badge.svg)](https://github.com/toutaio/toutago-sil-migrator/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/toutaio/toutago-sil-migrator.svg)](https://pkg.go.dev/github.com/toutaio/toutago-sil-migrator)
+[![Go Report Card](https://goreportcard.com/badge/github.com/toutaio/toutago-sil-migrator)](https://goreportcard.com/report/github.com/toutaio/toutago-sil-migrator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **Síl** (Irish for "seed" or "lineage") - A powerful, standalone database migration and seeding tool for Go applications. Part of the **Toutā Framework** ecosystem.
 
