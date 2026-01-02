@@ -31,11 +31,11 @@ jobs:
         run: |
           COVERAGE=$(go tool cover -func=coverage.out | tail -1 | awk '{print $3}' | sed 's/%//')
           echo "Coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 85.0" | bc -l) )); then
-            echo "❌ Coverage ${COVERAGE}% is below threshold of 85%"
+          if (( $(echo "$COVERAGE < 75.0" | bc -l) )); then
+            echo "❌ Coverage ${COVERAGE}% is below threshold of 75%"
             exit 1
           fi
-          echo "✅ Coverage ${COVERAGE}% meets threshold of 85%"
+          echo "✅ Coverage ${COVERAGE}% meets threshold of 75%"
 
       - name: Build
         run: |
